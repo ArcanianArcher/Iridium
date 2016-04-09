@@ -6,6 +6,7 @@
 int main()
 {
     sf::RenderWindow win(sf::VideoMode(1080, 720), "Iridium");
+    win.setFramerateLimit(60);
 
     int corb1_x, corb1_y, corb2_x, corb2_y;
     corb1_y = corb2_y = 50;
