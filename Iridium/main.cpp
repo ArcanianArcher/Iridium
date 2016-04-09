@@ -30,7 +30,7 @@ int main()
     bool on_ground;
     x = 515;
     y = 100;
-    gravity_speed = 0.1f;
+    gravity_speed = 0.2f;
     x_speed = y_speed = 0.f;
     pull_strength = 0.5f;
 
