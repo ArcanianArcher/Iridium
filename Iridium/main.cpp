@@ -45,7 +45,7 @@ int main()
         x_speed *= 0.95f;
         y_speed *= 0.95f;
         y_speed += gravity_speed;
-        while (win.pollEvent(event)){if (event.type == sf::Event::Closed){win.close();}}
+        while (win.pollEvent(event)){if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape){win.close();}}
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
             x_speed += cos(atan(abs((y + 25) - (corb1_y + 25)) / abs((x + 25) - (corb1_x + 25)))) * -pull_strength;
@@ -75,6 +75,7 @@ int main()
         win.draw(control1);
         win.draw(control2);
         win.display();
+        win.setFramerateLimit(80);
     }
     return 0;
 }
