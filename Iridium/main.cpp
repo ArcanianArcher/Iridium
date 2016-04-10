@@ -56,7 +56,6 @@ int main()
         x_speed *= 0.995f;
         y_speed *= 0.98f;
         y_speed += gravity;
-        std::cout << pushpull << std::endl;
         while (win.pollEvent(event))
             {
                 switch (event.type)
