@@ -33,13 +33,13 @@ int main()
     control2.setFillColor(sf::Color::Red);
     control2.setPosition(corb2_x, corb2_y);
 
-    float x, y, gravity, x_speed, y_speed, pull_strength;
+    float x, y, gravity, x_speed, y_speed, pull_strength, pull_constant;
     int pushpull;
     x = 515;
     y = 100;
     gravity = 0.2f;
     x_speed = y_speed = 0.f;
-    pull_strength = 0.5f;
+    pull_constant = 0.001f;
     pushpull = 1;                          // pushpull is 1 when pushpulling, -1 when repelling
     sf::Event event;
     win.setKeyRepeatEnabled(false);
@@ -75,16 +75,18 @@ int main()
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
-            x_speed += (cos(atan(fabs(((y + 25) - (corb1_y + 25))) / fabs(((x + 25) - (corb1_x + 25)))))) * -(pull_strength * pushpull);
-            y_speed += (sin(atan(fabs(((y + 25) - (corb1_y + 25))) / fabs(((x + 25) - (corb1_x + 25)))))) * -(pull_strength * pushpull);
+            pull_strength = sqrt(pow(fabs(((y + 25) - (corb1_y + 25))), 2) + pow(fabs(((x + 25) - (corb1_x + 25))), 2));
+            x_speed += (cos(atan(fabs(((y + 25) - (corb1_y + 25))) / fabs(((x + 25) - (corb1_x + 25)))))) * -((pull_strength * pull_constant) * pushpull);
+            y_speed += (sin(atan(fabs(((y + 25) - (corb1_y + 25))) / fabs(((x + 25) - (corb1_x + 25)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
 
             lines[0].position = sf::Vector2f(corb1_x + 25, corb1_y + 25);
             lines[1].position = sf::Vector2f((x + 25), (y + 25));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
-            x_speed += (cos(atan(fabs(((y + 25) - (corb1_y + 25))) / fabs(((x + 25) - (corb1_x + 25)))))) * (pull_strength * pushpull);
-            y_speed += (sin(atan(fabs(((y + 25) - (corb1_y + 25))) / fabs(((x + 25) - (corb1_x + 25)))))) * -(pull_strength * pushpull);
+            pull_strength = sqrt(pow(fabs(((y + 25) - (corb2_y + 25))), 2) + pow(fabs(((x + 25) - (corb2_x + 25))), 2));
+            x_speed += (cos(atan(fabs(((y + 25) - (corb2_y + 25))) / fabs(((x + 25) - (corb2_x + 25)))))) * ((pull_strength * pull_constant) * pushpull);
+            y_speed += (sin(atan(fabs(((y + 25) - (corb2_y + 25))) / fabs(((x + 25) - (corb2_x + 25)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
 
             lines[2].position = sf::Vector2f(corb2_x + 25, corb2_y + 25);
             lines[3].position = sf::Vector2f((x + 25), (y + 25));
