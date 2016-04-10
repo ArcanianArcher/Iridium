@@ -12,7 +12,7 @@ int main()
     bool keyState[sf::Keyboard::KeyCount];
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++)
     {
-        keyState[i] = true;
+        keyState[i] = false;
     }
 
     int corb1_x, corb1_y, corb2_x, corb2_y;
@@ -34,7 +34,6 @@ int main()
     control2.setPosition(corb2_x, corb2_y);
 
     float x, y, gravity, x_speed, y_speed, pull_strength;
-    bool on_ground;
     int pushpull;
     x = 515;
     y = 100;
@@ -97,8 +96,7 @@ int main()
 
         y += y_speed;
         x += x_speed;
-        if (y > (720 - 52)){on_ground = true; y_speed = 0;} else {on_ground = false;}
-        if (y > (720 - 50)){y = 720 - 50;}
+        if (y > (720 - 50)){y = 720 - 50; y_speed = 0;}
         if (x > (corb2_x - 5)){x = (corb2_x - 6); x_speed = 0;}
         if (x < (corb1_x + 5)){x = (corb1_x + 6); x_speed = 0;}
         if (y < (corb1_y + 5)){y = (corb1_y + 6); y_speed = 0;}
