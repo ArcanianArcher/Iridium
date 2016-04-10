@@ -39,7 +39,7 @@ int main()
     y = 100;
     gravity = 0.2f;
     x_speed = y_speed = 0.f;
-    pull_constant = 0.001f;
+    pull_constant = 0.0009f;
     pushpull = 1;                          // pushpull is 1 when pushpulling, -1 when repelling
     sf::Event event;
     win.setKeyRepeatEnabled(false);
@@ -51,8 +51,8 @@ int main()
         lines[2].position = sf::Vector2f(0, 0);
         lines[3].position = sf::Vector2f(0, 0);
         y_speed += gravity;
-        x_speed *= 0.98f;
-        y_speed *= 0.98f;
+        //x_speed *= 0.98f;
+        //y_speed *= 0.98f;
         while (win.pollEvent(event))
             {
                 switch (event.type)
@@ -98,7 +98,7 @@ int main()
         if (x > (corb2_x - 5)){x = (corb2_x - 6); x_speed = 0;}
         if (x < (corb1_x + 5)){x = (corb1_x + 6); x_speed = 0;}
         if (y < (corb1_y + 5)){y = (corb1_y + 6); y_speed = 0;}
-        if (y > (720 - 50)){y = (720 - 51); y_speed = 0;}
+        if (y > (720 - 50)){y = (720 - 51); y_speed = 0; x_speed *= 0.9f;}
 
         ball.setPosition(x, y);
         win.draw(lines);
