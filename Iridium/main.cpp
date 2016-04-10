@@ -10,26 +10,24 @@ int main()
     win.setKeyRepeatEnabled(false);
 
     bool keyState[sf::Keyboard::KeyCount];
-    for (int i = 0; i < (sf::Keyboard::KeyCount); i++)
-    {
-        keyState[i] = false;
-    }
-
-    int corb1_x, corb1_y, corb2_x, corb2_y;
+    for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
+    int corb1_x, corb1_y, corb2_x, corb2_y, ball_r, corb_r;
     corb1_y = corb2_y = 30;
     corb1_x = 30;
     corb2_x = 1000;
+    ball_r = 25;
+    corb_r = 25;
 
     sf::VertexArray lines(sf::Lines, 4);
 
-    sf::CircleShape ball(25);
+    sf::CircleShape ball(ball_r);
     ball.setFillColor(sf::Color::Green);
 
-    sf::CircleShape control1(25);
+    sf::CircleShape control1(corb_r);
     control1.setFillColor(sf::Color::Red);
     control1.setPosition(corb1_x, corb1_y);
 
-    sf::CircleShape control2(25);
+    sf::CircleShape control2(corb_r);
     control2.setFillColor(sf::Color::Red);
     control2.setPosition(corb2_x, corb2_y);
 
@@ -51,8 +49,6 @@ int main()
         lines[2].position = sf::Vector2f(0, 0);
         lines[3].position = sf::Vector2f(0, 0);
         y_speed += gravity;
-        //x_speed *= 0.98f;
-        //y_speed *= 0.98f;
         while (win.pollEvent(event))
             {
                 switch (event.type)
@@ -75,21 +71,21 @@ int main()
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
-            pull_strength = sqrt(pow(fabs(((y + 25) - (corb1_y + 25))), 2) + pow(fabs(((x + 25) - (corb1_x + 25))), 2));
-            x_speed += (cos(atan(fabs(((y + 25) - (corb1_y + 25))) / fabs(((x + 25) - (corb1_x + 25)))))) * -((pull_strength * pull_constant) * pushpull);
-            y_speed += (sin(atan(fabs(((y + 25) - (corb1_y + 25))) / fabs(((x + 25) - (corb1_x + 25)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
+            pull_strength = sqrt(pow(fabs(((y + ball_r) - (corb1_y + corb_r))), 2) + pow(fabs(((x + corb_r) - (corb1_x + corb_r))), 2));
+            x_speed += (cos(atan(fabs(((y + ball_r) - (corb1_y + corb_r))) / fabs(((x + ball_r) - (corb1_x + corb_r)))))) * -((pull_strength * pull_constant) * pushpull);
+            y_speed += (sin(atan(fabs(((y + ball_r) - (corb1_y + corb_r))) / fabs(((x + ball_r) - (corb1_x + corb_r)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
 
-            lines[0].position = sf::Vector2f(corb1_x + 25, corb1_y + 25);
-            lines[1].position = sf::Vector2f((x + 25), (y + 25));
+            lines[0].position = sf::Vector2f(corb1_x + corb_r, corb1_y + corb_r);
+            lines[1].position = sf::Vector2f((x + ball_r), (y + ball_r));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
-            pull_strength = sqrt(pow(fabs(((y + 25) - (corb2_y + 25))), 2) + pow(fabs(((x + 25) - (corb2_x + 25))), 2));
-            x_speed += (cos(atan(fabs(((y + 25) - (corb2_y + 25))) / fabs(((x + 25) - (corb2_x + 25)))))) * ((pull_strength * pull_constant) * pushpull);
-            y_speed += (sin(atan(fabs(((y + 25) - (corb2_y + 25))) / fabs(((x + 25) - (corb2_x + 25)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
+            pull_strength = sqrt(pow(fabs(((y + ball_r) - (corb2_y + corb_r))), 2) + pow(fabs(((x + corb_r) - (corb2_x + corb_r))), 2));
+            x_speed += (cos(atan(fabs(((y + ball_r) - (corb2_y + corb_r))) / fabs(((x + ball_r) - (corb2_x + corb_r)))))) * ((pull_strength * pull_constant) * pushpull);
+            y_speed += (sin(atan(fabs(((y + ball_r) - (corb2_y + corb_r))) / fabs(((x + ball_r) - (corb2_x + corb_r)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
 
-            lines[2].position = sf::Vector2f(corb2_x + 25, corb2_y + 25);
-            lines[3].position = sf::Vector2f((x + 25), (y + 25));
+            lines[2].position = sf::Vector2f(corb2_x + corb_r, corb2_y + corb_r);
+            lines[3].position = sf::Vector2f((x + ball_r), (y + ball_r));
         }
 
         y += y_speed;
