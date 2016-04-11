@@ -12,7 +12,7 @@ public:
     Level()
     {
         // constructor
-        level_texture.loadFromFile("C:/Users/Kian/Desktop/Iridium/Iridium/levels/testlevel2.bmp");
+        level_texture.loadFromFile("C:/Users/Kian/Desktop/Iridium/Iridium/levels/testlevel1.jpg");
         level_sprite.setTexture(level_texture, true);
     };
 
@@ -123,11 +123,11 @@ int main()
         if (y > (720 - (ball_r * 2))){y = (720 - ((ball_r * 2) + 1)); y_speed = 0; x_speed *= 0.9f;}
 
         ball.setPosition(x, y);
+        win.draw(level->GetImage());
         win.draw(lines);
         win.draw(ball);
         win.draw(control1);
         win.draw(control2);
-        win.draw(level->GetImage());
         win.display();
         win.setFramerateLimit(80);
     }
