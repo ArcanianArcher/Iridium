@@ -3,11 +3,37 @@
 #include <math.h>
 #include <iostream>
 
+class Level
+{
+public:
+    sf::Image level_image;
+    sf::Texture level_texture;
+    sf::Sprite level_sprite;
+    Level()
+    {
+        // constructor
+        level_texture.loadFromFile("C:/Users/Kian/Desktop/Iridium/Iridium/levels/testlevel2.bmp");
+        level_sprite.setTexture(level_texture, true);
+    };
+
+    bool IsColliding(int x, int y, int r)
+    {
+
+    };
+    sf::Sprite GetImage()
+    {
+        return level_sprite;
+    }
+};
+
+
 int main()
 {
     sf::RenderWindow win(sf::VideoMode(1080, 720), "Iridium");
     win.setFramerateLimit(60);
     win.setKeyRepeatEnabled(false);
+
+    Level* level = new Level();
 
     bool keyState[sf::Keyboard::KeyCount];
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
@@ -38,7 +64,7 @@ int main()
     gravity = 0.2f;
     x_speed = y_speed = 0.f;
     pull_constant = 0.0009f;
-    pushpull = 1;                          // pushpull is 1 when pushpulling, -1 when repelling
+    pushpull = 1;                          // pushpull is 1 when pulling, -1 when repelling
     sf::Event event;
     win.setKeyRepeatEnabled(false);
     while (win.isOpen())
@@ -101,6 +127,7 @@ int main()
         win.draw(ball);
         win.draw(control1);
         win.draw(control2);
+        win.draw(level->GetImage());
         win.display();
         win.setFramerateLimit(80);
     }
