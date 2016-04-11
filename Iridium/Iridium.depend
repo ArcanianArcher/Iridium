@@ -389,9 +389,13 @@
 	<math.h>
 	<iostream>
 
-1460342335 source:c:\users\kian shepherd\desktop\iridium\iridium\main.cpp
+1460416995 source:c:\users\kian shepherd\desktop\iridium\iridium\main.cpp
 	<SFML/Graphics.hpp>
 	<stdlib.h>
 	<math.h>
 	<iostream>
+	<sstream>
+	<stdio.h>
+	<unistd.h>
+	<string.h>
 

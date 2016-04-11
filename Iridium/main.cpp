@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <stdlib.h>
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <iostream>
 #include <sstream>
@@ -10,24 +11,43 @@
 #define SSTR( x ) static_cast< std::ostringstream & >( \
         ( std::ostringstream() << std::dec << x ) ).str()
 
+
+
 class Level
 {
 public:
     sf::Image level_image;
     sf::Texture level_texture;
     sf::Sprite level_sprite;
+    sf::Color black = sf::Color::Black;
     Level(int level_number)
     {
         // constructor
         std::string file_path = "./levels/testlevel" + SSTR(level_number) + ".png";
         level_texture.loadFromFile(file_path);
+        level_image.loadFromFile(file_path);
         level_sprite.setTexture(level_texture, true);
-        std::cout << "new level : " << level_number << std::endl;
+        std::cout << "new level: " << level_number << std::endl;
     };
 
-    bool IsColliding(int x, int y, int r)
+    bool IsColliding(int x, int y, int r, int p)
     {
+        /*
+        int x_points[p];
+        int y_points[p];
 
+        for (int i = 0; i < p; i++)
+        {
+            x_points[i] = abs(x + (r * cos(((2 * i) * M_PI) / p)));
+            y_points[i] = abs(y + (r * sin(((2 * i) * M_PI) / p)));
+        }
+        */
+        for (int i = 0; i < p; i++)
+        {
+            if (level_image.getPixel(abs(x + (r * cos(((2 * i) * M_PI) / p))), abs(y + (r * sin(((2 * i) * M_PI) / p)))) == black)
+                {return true;} //live code
+                //{std::cout<<"colliding"<<std::endl; return true;}else{std::cout<<std::endl;} //testing purposess
+        }
         return false;
     };
     sf::Sprite GetSprite(){return level_sprite;}
@@ -40,18 +60,19 @@ int main()
     win.setFramerateLimit(80);
     win.setKeyRepeatEnabled(false);
 
-    int t = 1;
-    Level* level[7];
-    level[t - 1] = new Level(t);
+    int current_level_num = 1;
+    Level* level = new Level(current_level_num);
 
     bool keyState[sf::Keyboard::KeyCount];
+    bool is_collided;
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
-    int corb1_x, corb1_y, corb2_x, corb2_y, ball_r, corb_r;
+    int corb1_x, corb1_y, corb2_x, corb2_y, ball_r, corb_r, detection_points;
     corb1_y = corb2_y = 30;
     corb1_x = 30;
     corb2_x = 1000;
     ball_r = 25;
     corb_r = 25;
+    detection_points = 6;
 
     sf::VertexArray lines(sf::Lines, 4);
 
@@ -84,6 +105,7 @@ int main()
         lines[2].position = sf::Vector2f(0, 0);
         lines[3].position = sf::Vector2f(0, 0);
         y_speed += gravity;
+        is_collided = level->IsColliding(x, y, ball_r, detection_points);
         while (win.pollEvent(event))
             {
                 switch (event.type)
@@ -93,7 +115,7 @@ int main()
                     break;
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Escape) {win.close();}
-                    if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code]) {pushpull *= -1; t++; level[t - 1] = new Level(t);}
+                    if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code]) {pushpull *= -1; current_level_num++; level = new Level(current_level_num);}
                     keyState[event.key.code] = true;
                     break;
                 case sf::Event::KeyReleased:
@@ -132,7 +154,7 @@ int main()
         if (y > (720 - (ball_r * 2))){y = (720 - ((ball_r * 2) + 1)); y_speed = 0; x_speed *= 0.9f;}
 
         ball.setPosition(x, y);
-        win.draw(level[t - 1]->GetSprite());
+        win.draw(level->GetSprite());
         win.draw(lines);
         win.draw(ball);
         win.draw(control1);
