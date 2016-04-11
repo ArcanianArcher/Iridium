@@ -3,6 +3,9 @@
 #include <math.h>
 #include <iostream>
 #include <sstream>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 
 #define SSTR( x ) static_cast< std::ostringstream & >( \
         ( std::ostringstream() << std::dec << x ) ).str()
@@ -16,32 +19,30 @@ public:
     Level(int level_number)
     {
         // constructor
-        std::string base_path = "C:/Users/Kian Shepherd/Desktop/Iridium/Iridium/levels/testlevel";
-        std::string file_number = SSTR(level_number);
-        std::string file_ext = ".jpg";
-        std::string file_path = base_path + file_number + file_ext;
+        std::string file_path = "./levels/testlevel" + SSTR(level_number) + ".png";
         level_texture.loadFromFile(file_path);
         level_sprite.setTexture(level_texture, true);
+        std::cout << "new level : " << level_number << std::endl;
     };
 
     bool IsColliding(int x, int y, int r)
     {
 
+        return false;
     };
-    sf::Sprite GetImage()
-    {
-        return level_sprite;
-    }
+    sf::Sprite GetSprite(){return level_sprite;}
 };
 
 
 int main()
 {
     sf::RenderWindow win(sf::VideoMode(1080, 720), "Iridium");
-    win.setFramerateLimit(60);
+    win.setFramerateLimit(80);
     win.setKeyRepeatEnabled(false);
 
-    Level* level = new Level(1);
+    int t = 1;
+    Level* level[7];
+    level[t - 1] = new Level(t);
 
     bool keyState[sf::Keyboard::KeyCount];
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
@@ -92,7 +93,7 @@ int main()
                     break;
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Escape) {win.close();}
-                    if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code]) {pushpull *= -1;}
+                    if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code]) {pushpull *= -1; t++; level[t - 1] = new Level(t);}
                     keyState[event.key.code] = true;
                     break;
                 case sf::Event::KeyReleased:
@@ -131,13 +132,12 @@ int main()
         if (y > (720 - (ball_r * 2))){y = (720 - ((ball_r * 2) + 1)); y_speed = 0; x_speed *= 0.9f;}
 
         ball.setPosition(x, y);
-        win.draw(level->GetImage());
+        win.draw(level[t - 1]->GetSprite());
         win.draw(lines);
         win.draw(ball);
         win.draw(control1);
         win.draw(control2);
         win.display();
-        win.setFramerateLimit(80);
     }
     return 0;
 }
