@@ -94,7 +94,7 @@ int main()
         if (x > (corb2_x - 5)){x = (corb2_x - 6); x_speed = 0;}
         if (x < (corb1_x + 5)){x = (corb1_x + 6); x_speed = 0;}
         if (y < (corb1_y + 5)){y = (corb1_y + 6); y_speed = 0;}
-        if (y > (720 - 50)){y = (720 - 51); y_speed = 0; x_speed *= 0.9f;}
+        if (y > (720 - (ball_r * 2))){y = (720 - (ball_r * 2) + 1); y_speed = 0; x_speed *= 0.9f;}
 
         ball.setPosition(x, y);
         win.draw(lines);
