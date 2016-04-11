@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
+#include <sstream>
+
+#define SSTR( x ) static_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
 
 class Level
 {
@@ -9,10 +13,14 @@ public:
     sf::Image level_image;
     sf::Texture level_texture;
     sf::Sprite level_sprite;
-    Level()
+    Level(int level_number)
     {
         // constructor
-        level_texture.loadFromFile("C:/Users/Kian/Desktop/Iridium/Iridium/levels/testlevel1.jpg");
+        std::string base_path = "C:/Users/Kian Shepherd/Desktop/Iridium/Iridium/levels/testlevel";
+        std::string file_number = SSTR(level_number);
+        std::string file_ext = ".jpg";
+        std::string file_path = base_path + file_number + file_ext;
+        level_texture.loadFromFile(file_path);
         level_sprite.setTexture(level_texture, true);
     };
 
@@ -33,7 +41,7 @@ int main()
     win.setFramerateLimit(60);
     win.setKeyRepeatEnabled(false);
 
-    Level* level = new Level();
+    Level* level = new Level(1);
 
     bool keyState[sf::Keyboard::KeyCount];
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
