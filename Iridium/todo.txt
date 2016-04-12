@@ -1,0 +1,32 @@
+Level progression (finish area triggers level switch)
+Level switch visual effects
+Level design 1-10 (1-5 are tutorial levels)
+Level design 11-20
+Level design 21-30
+Level design 31-40
+Level design 41-50
+Drawing levels 1-10
+Drawing levels 11-20
+Drawing levels 21-30
+Drawing levels 31-40
+Drawing levels 41-50
+Good collision handelling (slippery curves)
+Implementing level modes (push level, pull level, both?)
+Implementing level control orb positions
+Main menu
+Option menu
+Pause menu (note: window out of focus event triggers pause)
+Obstacles (level hazards, spikes, etc.)
+Collectables (must collect to finish level)
+Score (time to complete level)
+High Scores (saved in a high score txt file. option to wipe all high scores from option menu)
+Sound effects
+Game background music (PPPPPP? Music for different levels, menues, pause, etc.)
+Compile to exe
+
+
+Ongoing:
+Refactor code.
+Optimize.
+
+
