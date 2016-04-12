@@ -158,8 +158,8 @@ int main()
         is_collided = level->IsColliding(x, y, ball_r, detection_points);
         if (is_collided != -1)
         {
-            x = prev_x;
-            y = prev_y;
+            x = prev_x + (-x_speed);
+            y = prev_y + (-y_speed);
             if (is_collided == 0 || is_collided == 4)
             {
                 x_speed *= -1; x_speed *= friction_constant; y_speed *= friction_constant; x += x_speed;
