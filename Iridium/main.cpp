@@ -93,7 +93,7 @@ int main()
     control2.setFillColor(sf::Color::Red);
     control2.setPosition(corb2_x, corb2_y);
 
-    float x, y, gravity, x_speed, y_speed, pull_strength, pull_constant;
+    float x, y, prev_x, prev_y, gravity, x_speed, y_speed, pull_strength, pull_constant;
     int pushpull;
     x = 515;
     y = 100;
@@ -151,22 +151,26 @@ int main()
             lines[3].position = sf::Vector2f((x + ball_r), (y + ball_r));
         }
 
+        prev_x = x;
+        prev_y = y;
         y += y_speed;
         x += x_speed;
         is_collided = level->IsColliding(x, y, ball_r, detection_points);
         if (is_collided != -1)
         {
+            x = prev_x;
+            y = prev_y;
             if (is_collided == 0 || is_collided == 4)
             {
-                x_speed *= -1; x += x_speed; x_speed *= friction_constant; y_speed *= friction_constant;
+                x_speed *= -1; x_speed *= friction_constant; y_speed *= friction_constant; x += x_speed;
             }
             else if (is_collided == 2 || is_collided == 6)
             {
-                y_speed *= -1; y += y_speed; x_speed *= friction_constant; y_speed *= friction_constant;
+                y_speed *= -1; x_speed *= friction_constant; y_speed *= friction_constant; y += y_speed;
             }
             else
             {
-                x_speed *= -1; x += x_speed; y_speed *= -1; y += y_speed; x_speed *= friction_constant; y_speed *= friction_constant;
+                x_speed *= -1; y_speed *= -1;; x_speed *= friction_constant; y_speed *= friction_constant; x += x_speed; y += y_speed;
             }
         }
         if (x > (corb2_x - 5)){x = (corb2_x - 6); x_speed = 0;}
