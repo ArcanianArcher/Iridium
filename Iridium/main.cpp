@@ -23,7 +23,7 @@ public:
     Level(int level_number)
     {
         // constructor
-        std::string file_path = "./levels/testlevel" + SSTR(level_number) + ".png";
+        std::string file_path = "./levels/TL" + SSTR(level_number) + ".png";
         level_texture.loadFromFile(file_path);
         level_image.loadFromFile(file_path);
         level_sprite.setTexture(level_texture, true);
@@ -32,7 +32,7 @@ public:
 
     int IsColliding(int x, int y, int r, int p)
     {
-
+        /*
         int x_points[p];
         int y_points[p];
         std::cout << "center (x,y): ("<<x<<", "<<y<<")"<<std::endl;
@@ -44,15 +44,13 @@ public:
         }
         std::cout<<std::endl;
         std::cout<<std::endl;
-        std::cout<<std::endl;
-        std::cout<<std::endl;
-        std::cout<<std::endl;
+        */
 
         for (int i = 0; i < p; i++)
         {
-            if (level_image.getPixel(abs(x + (r * cos(((2 * i) * M_PI) / p))), abs(y + (r * sin(((2 * i) * M_PI) / p)))) == black)
-                //{return i;} //live code
-                {std::cout<<"colliding: "<<i<<std::endl; return i;}else{std::cout<<std::endl;} //testing purposess
+            if (level_image.getPixel(abs((x + r) + (r * cos(((2 * i) * M_PI) / p))), abs((y + r) + (r * sin(((2 * i) * M_PI) / p)))) == black)
+                {return i;} //live code
+                //{std::cout<<"colliding: "<<i<<std::endl; return i;}else{std::cout<<std::endl;} //testing purposess
         }
         return -1;
     };
@@ -63,10 +61,10 @@ public:
 int main()
 {
     sf::RenderWindow win(sf::VideoMode(1080, 720), "Iridium");
-    win.setFramerateLimit(5);
+    win.setFramerateLimit(80);
     win.setKeyRepeatEnabled(false);
 
-    int current_level_num = 1;
+    int current_level_num = 0;
     Level* level = new Level(current_level_num);
 
     bool keyState[sf::Keyboard::KeyCount];
