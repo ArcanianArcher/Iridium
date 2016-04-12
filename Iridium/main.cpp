@@ -78,7 +78,7 @@ int main()
     ball_r = 25;
     corb_r = 25;
     d_friction_constant = 0.3f;
-    i_friction_constant = 0.6f;
+    i_friction_constant = 0.95f;
     detection_points = 8;
 
     sf::VertexArray lines(sf::Lines, 4);

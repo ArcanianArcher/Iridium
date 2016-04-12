@@ -1,9 +1,13 @@
 # depslib dependency file v1.0
-1460140411 source:c:\users\kian\desktop\iridium\iridium\main.cpp
+1460467233 source:c:\users\kian\desktop\iridium\iridium\main.cpp
 	<SFML/Graphics.hpp>
 	<stdlib.h>
 	<math.h>
 	<iostream>
+	<sstream>
+	<stdio.h>
+	<unistd.h>
+	<string.h>
 
 1429784053 c:\program files (x86)\codeblocks\sfml\include\sfml\graphics.hpp
 	<SFML/Window.hpp>
