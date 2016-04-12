@@ -71,13 +71,14 @@ int main()
     int is_collided;
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
     int corb1_x, corb1_y, corb2_x, corb2_y, ball_r, corb_r, detection_points;
-    float friction_constant;
+    float d_friction_constant, i_friction_constant;
     corb1_y = corb2_y = 30;
     corb1_x = 30;
     corb2_x = 1000;
     ball_r = 25;
     corb_r = 25;
-    friction_constant = 0.7f;
+    d_friction_constant = 0.3f;
+    i_friction_constant = 0.6f;
     detection_points = 8;
 
     sf::VertexArray lines(sf::Lines, 4);
@@ -121,7 +122,8 @@ int main()
                     break;
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Escape) {win.close();}
-                    if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code]) {pushpull *= -1; current_level_num++; level = new Level(current_level_num);}
+                    if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code]) {pushpull *= -1;}
+                    if (event.key.code == sf::Keyboard::R && !keyState[event.key.code]) {current_level_num++; level = new Level(current_level_num);}
                     keyState[event.key.code] = true;
                     break;
                 case sf::Event::KeyReleased:
@@ -162,15 +164,15 @@ int main()
             y = prev_y + (-y_speed);
             if (is_collided == 0 || is_collided == 4)
             {
-                x_speed *= -1; x_speed *= friction_constant; y_speed *= friction_constant; x += x_speed;
+                x_speed *= -1; x_speed *= d_friction_constant; y_speed *= i_friction_constant; x += x_speed;
             }
             else if (is_collided == 2 || is_collided == 6)
             {
-                y_speed *= -1; x_speed *= friction_constant; y_speed *= friction_constant; y += y_speed;
+                y_speed *= -1; x_speed *= i_friction_constant; y_speed *= d_friction_constant; y += y_speed;
             }
             else
             {
-                x_speed *= -1; y_speed *= -1;; x_speed *= friction_constant; y_speed *= friction_constant; x += x_speed; y += y_speed;
+                x_speed *= -1; y_speed *= -1;; x_speed *= d_friction_constant; y_speed *= d_friction_constant; x += x_speed; y += y_speed;
             }
         }
         if (x > (corb2_x - 5)){x = (corb2_x - 6); x_speed = 0;}
