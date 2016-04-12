@@ -30,6 +30,22 @@ public:
         std::cout << "new level: " << level_number << std::endl;
     };
 
+    int *CollisionPoints(int x, int y, int r, int p)
+    {
+        int *points[p + 1];
+        int num_points = 0;
+        for (int i = 0; i < p; i++)
+        {
+            if (level_image.getPixel(abs((x + r) + (r * cos(((2 * i) * M_PI) / p))), abs((y + r) + (r * sin(((2 * i) * M_PI) / p)))) == black)
+                {
+                    num_points++;
+                    *points[num_points] = i;
+                }
+        }
+        *points[0] = num_points;
+        return *points;
+    }
+
     int IsColliding(int x, int y, int r, int p)
     {
         /*
@@ -57,6 +73,17 @@ public:
     sf::Sprite GetSprite(){return level_sprite;}
 };
 
+sf::Vector2f AddVectors(int *points, int total_detection_points)
+{
+    sf::Vector2f vector_total(0.f, 0.f);
+    for (int i = 0; i < points[0]; i++)
+    {
+        float angle = (((2 * points[i + 1]) * M_PI) / total_detection_points);
+        sf::Vector2f v(cos(angle), sin(angle));
+        vector_total += v;
+    }
+    return vector_total;
+}
 
 int main()
 {
@@ -79,7 +106,7 @@ int main()
     corb_r = 25;
     d_friction_constant = 0.3f;
     i_friction_constant = 0.95f;
-    detection_points = 8;
+    detection_points = 30;
 
     sf::VertexArray lines(sf::Lines, 4);
 
@@ -155,9 +182,17 @@ int main()
 
         prev_x = x;
         prev_y = y;
+
         y += y_speed;
         x += x_speed;
-        is_collided = level->IsColliding(x, y, ball_r, detection_points);
+
+        //int* detected_points = level->CollisionPoints(x, y, ball_r, detection_points);
+        //if (detected_points[0] != 0)
+        //{
+        //    sf::Vector2f col_tangent = AddVectors(detected_points, detection_points);
+        //}
+
+        is_collided = level->IsColliding(x, y, ball_r, 8);
         if (is_collided != -1)
         {
             x = prev_x + (-x_speed);
@@ -175,10 +210,6 @@ int main()
                 x_speed *= -1; y_speed *= -1;; x_speed *= d_friction_constant; y_speed *= d_friction_constant; x += x_speed; y += y_speed;
             }
         }
-        if (x > (corb2_x - 5)){x = (corb2_x - 6); x_speed = 0;}
-        if (x < (corb1_x + 5)){x = (corb1_x + 6); x_speed = 0;}
-        if (y < (corb1_y + 5)){y = (corb1_y + 6); y_speed = 0;}
-        if (y > (720 - (ball_r * 2))){y = (720 - ((ball_r * 2) + 1)); y_speed = 0; x_speed *= 0.9f;}
 
         ball.setPosition(x, y);
         win.draw(level->GetSprite());
