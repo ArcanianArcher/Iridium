@@ -48,21 +48,19 @@ public:
     void SetControlOrb2Colour(sf::Color colour){control2.setFillColor(colour);}
     sf::Vector2f GetControlOrb1Position(void){return control1.getPosition();}
     sf::Vector2f GetControlOrb2Position(void){return control2.getPosition();}
+    void CollisionPoints(int* points, int x, int y, int r, int p)
 
-    int *CollisionPoints(int x, int y, int r, int p)
     {
-        int *points[p + 1];
         int num_points = 0;
         for (int i = 0; i < p; i++)
         {
             if (level_image.getPixel(abs((x + r) + (r * cos(((2 * i) * M_PI) / p))), abs((y + r) + (r * sin(((2 * i) * M_PI) / p)))) == black)
                 {
                     num_points++;
-                    *points[num_points] = i;
+                    points[num_points] = i;
                 }
         }
-        *points[0] = num_points;
-        return *points;
+        points[0] = num_points;
     }
 
     int IsColliding(int x, int y, int r, int p)
@@ -92,16 +90,22 @@ public:
     sf::Sprite GetSprite(){return level_sprite;}
 };
 
+
+
 sf::Vector2f AddVectors(int *points, int total_detection_points)
 {
     sf::Vector2f vector_total(0.f, 0.f);
     for (int i = 0; i < points[0]; i++)
     {
         float angle = (((2 * points[i + 1]) * M_PI) / total_detection_points);
-        sf::Vector2f v(cos(angle), sin(angle));
+        sf::Vector2f v(-(cos(angle)), -(sin(angle)));
+
+
         vector_total += v;
     }
-    return vector_total;
+    float length = sqrt((vector_total.x * vector_total.x) + (vector_total.y * vector_total.y));
+    sf::Vector2f u(vector_total.x / length, vector_total.y / length);
+    return u;
 }
 
 int main()
@@ -116,13 +120,15 @@ int main()
     bool keyState[sf::Keyboard::KeyCount];
     int is_collided;
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
-    int ball_r, detection_points;
+    int ball_r;
+    const int detection_points = 30;
+    int detected_points[detection_points + 1];
     float d_friction_constant, i_friction_constant;
     ball_r = 25;
 
     d_friction_constant = 0.3f;
     i_friction_constant = 0.95f;
-    detection_points = 30;
+
 
     sf::VertexArray lines(sf::Lines, 4);
     sf::CircleShape ball(ball_r);
@@ -187,18 +193,23 @@ int main()
             lines[3].position = sf::Vector2f((x + ball_r), (y + ball_r));
         }
 
-        prev_x = x;
-        prev_y = y;
+        //prev_x = x;
+        //prev_y = y;
 
         y += y_speed;
         x += x_speed;
 
-        //int* detected_points = level->CollisionPoints(x, y, ball_r, detection_points);
-        //if (detected_points[0] != 0)
-        //{
-        //    sf::Vector2f col_tangent = AddVectors(detected_points, detection_points);
-        //}
-
+        level->CollisionPoints(detected_points, x, y, ball_r, detection_points);
+        if (detected_points[0] != 0)
+        {
+            sf::Vector2f col_tangent = AddVectors(detected_points, detection_points);
+            std::cout<<col_tangent.x<<", "<<col_tangent.y<<std::endl;
+            x_speed *= col_tangent.x;
+            y_speed *= col_tangent.y;
+            y += y_speed;
+            x += x_speed;
+        }
+        /*
         is_collided = level->IsColliding(x, y, ball_r, 8);
         if (is_collided != -1)
         {
@@ -217,7 +228,7 @@ int main()
                 x_speed *= -1; y_speed *= -1;; x_speed *= d_friction_constant; y_speed *= d_friction_constant; x += x_speed; y += y_speed;
             }
         }
-
+        */
         ball.setPosition(x, y);
         win.draw(level->GetSprite());
         win.draw(lines);
