@@ -20,7 +20,6 @@ public:
     sf::Image level_image;
     sf::Texture level_texture;
     sf::Sprite level_sprite;
-    sf::Color black = sf::Color::Black;
     int control_radius = 25;
     sf::CircleShape control1;
     sf::CircleShape control2;
@@ -38,7 +37,6 @@ public:
         control2.setPosition(corb2_x, corb2_y);
         control1.setFillColor(colour);
         control2.setFillColor(colour);
-
         std::cout << "new level: " << level_number << std::endl;
     };
 
@@ -48,21 +46,29 @@ public:
     void SetControlOrb2Colour(sf::Color colour){control2.setFillColor(colour);}
     sf::Vector2f GetControlOrb1Position(void){return control1.getPosition();}
     sf::Vector2f GetControlOrb2Position(void){return control2.getPosition();}
-    void CollisionPoints(int* points, int x, int y, int r, int p)
+    sf::Sprite GetSprite(){return level_sprite;}
 
+    int CollisionPoints(int *points, int x, int y, int r, int p)
+    // hit == 0 : null | hit == 1 : level end | hit == 2 : ?
     {
-        int num_points = 0;
+        int num_points = 0, hit = 0;
+        sf::Color PointColour;
         for (int i = 0; i < p; i++)
         {
-            if (level_image.getPixel(abs((x + r) + (r * cos(((2 * i) * M_PI) / p))), abs((y + r) + (r * sin(((2 * i) * M_PI) / p)))) == black)
-                {
-                    num_points++;
-                    points[num_points] = i;
-                }
+            PointColour = (level_image.getPixel(abs((x + r) + (r * cos(((2 * i) * M_PI) / p))), abs((y + r) + (r * sin(((2 * i) * M_PI) / p)))));
+            if (PointColour == sf::Color::Black)
+            {
+                num_points++;
+                points[num_points] = i;
+            }
+            if (PointColour == sf::Color(128,0,128))
+            {
+                hit = 1;
+            }
         }
         points[0] = num_points;
+        return hit;
     }
-    sf::Sprite GetSprite(){return level_sprite;}
 };
 
 
@@ -92,8 +98,8 @@ int main()
 
     bool keyState[sf::Keyboard::KeyCount];
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
-    int ball_r;
-    const int detection_points = 30;
+    int ball_r, CollideState;
+    const int detection_points = 36;
     int detected_points[detection_points + 1];
     float i_friction_constant;
     ball_r = 25;
@@ -144,28 +150,28 @@ int main()
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
-            pull_strength = sqrt(pow(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb1Position().x + level -> control_radius))), 2));
+            pull_strength = (sqrt(pow(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb1Position().x + level -> control_radius))), 2))) * 0.9f;
             if (pushpull == true)
             {
                 x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * -((pull_strength * pull_constant));
                 y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * -((pull_strength * (pull_constant / 0.5f)));
             }else{
-                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / -((pull_strength * pull_constant) * -1));
-                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / -((pull_strength * pull_constant / 0.5f) * -1));
+                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / -((pull_strength * pull_constant) * -1)) * 0.1f;
+                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / -((pull_strength * pull_constant / 0.5f) * -1)) * 0.1f;
             }
             lines[0].position = sf::Vector2f(level -> GetControlOrb1Position().x + level -> control_radius, level -> GetControlOrb1Position().y + level -> control_radius);
             lines[1].position = sf::Vector2f((x + ball_r), (y + ball_r));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
-            pull_strength = sqrt(pow(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb2Position().x + level -> control_radius))), 2));
+            pull_strength = (sqrt(pow(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb2Position().x + level -> control_radius))), 2))) * 0.9f;
             if (pushpull == true)
             {
                 x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * ((pull_strength * pull_constant));
                 y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * -((pull_strength * (pull_constant / 0.5f)));
             }else{
-                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / ((pull_strength * pull_constant) * -1));
-                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / -((pull_strength * (pull_constant / 0.5f)) * -1));
+                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / ((pull_strength * pull_constant) * -1)) * 0.1f;
+                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / -((pull_strength * (pull_constant / 0.5f)) * -1)) * 0.1f;
             }
             lines[2].position = sf::Vector2f(level -> GetControlOrb2Position().x + level -> control_radius, level -> GetControlOrb2Position().y + level -> control_radius);
             lines[3].position = sf::Vector2f((x + ball_r), (y + ball_r));
@@ -176,7 +182,7 @@ int main()
         y += y_speed;
         x += x_speed;
 
-        level->CollisionPoints(detected_points, x, y, ball_r, detection_points);
+        CollideState = level->CollisionPoints(detected_points, x, y, ball_r, detection_points);
         if (detected_points[0] != 0)
         {
             sf::Vector2f col_tangent = AddVectors(detected_points, detection_points, (sqrt((x_speed * x_speed) + (y_speed * y_speed))));
@@ -184,6 +190,10 @@ int main()
             y_speed += (col_tangent.y) * i_friction_constant;
             x = prev_x;
             y = prev_y;
+        }
+        if (CollideState == 1)
+        {
+            level = new Level(current_level_num + 1, 30, 30, 1000, 30, sf::Color::Red);
         }
         ball.setPosition(x, y);
         win.draw(level->GetSprite());
