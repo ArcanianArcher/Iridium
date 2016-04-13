@@ -62,31 +62,6 @@ public:
         }
         points[0] = num_points;
     }
-
-    int IsColliding(int x, int y, int r, int p)
-    {
-        /*
-        int x_points[p];
-        int y_points[p];
-        std::cout << "center (x,y): ("<<x<<", "<<y<<")"<<std::endl;
-        for (int i = 0; i < p; i++)
-        {
-            x_points[i] = abs(x + (r * cos(((2 * i) * M_PI) / p)));
-            y_points[i] = abs(y + (r * sin(((2 * i) * M_PI) / p)));
-            std::cout << "x, y points[" <<i<<"] (x,y): ("<<x_points[i]<<", "<<y_points[i]<<")"<<std::endl;
-        }
-        std::cout<<std::endl;
-        std::cout<<std::endl;
-        */
-
-        for (int i = 0; i < p; i++)
-        {
-            if (level_image.getPixel(abs((x + r) + (r * cos(((2 * i) * M_PI) / p))), abs((y + r) + (r * sin(((2 * i) * M_PI) / p)))) == black)
-                {return i;} //live code
-                //{std::cout<<"colliding: "<<i<<std::endl; return i;}else{std::cout<<std::endl;} //testing purposess
-        }
-        return -1;
-    };
     sf::Sprite GetSprite(){return level_sprite;}
 };
 
@@ -95,16 +70,12 @@ public:
 sf::Vector2f AddVectors(int *points, int total_detection_points, double total_speed)
 {
     sf::Vector2f vector_total(0.f, 0.f);
-    double speed;
     for (int i = 0; i < points[0]; i++)
     {
         float angle = (((2 * points[i + 1]) * M_PI) / total_detection_points);
         sf::Vector2f v(-(cos(angle)), -(sin(angle)));
-
-
         vector_total += v;
     }
-    //if (total_speed < 0.5){speed = 0.5;}else{speed = total_speed;}
     float length = sqrt((vector_total.x * vector_total.x) + (vector_total.y * vector_total.y));
     sf::Vector2f u((vector_total.x / length) * total_speed, (vector_total.y / length) * total_speed);
     return u;
@@ -120,29 +91,25 @@ int main()
     Level* level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);
 
     bool keyState[sf::Keyboard::KeyCount];
-    int is_collided;
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
     int ball_r;
     const int detection_points = 30;
     int detected_points[detection_points + 1];
-    float d_friction_constant, i_friction_constant;
+    float i_friction_constant;
     ball_r = 25;
-
     i_friction_constant = 0.3f;
-
-
     sf::VertexArray lines(sf::Lines, 4);
     sf::CircleShape ball(ball_r);
     ball.setFillColor(sf::Color::Green);
 
     float x, y, prev_x, prev_y, gravity, x_speed, y_speed, pull_strength, pull_constant;
-    int pushpull;
+    bool pushpull;
     x = 515;
     y = 100;
     gravity = 0.1f;
     x_speed = y_speed = 0.f;
     pull_constant = 0.0005f;
-    pushpull = 1;                          // pushpull is 1 when pulling, -1 when repelling
+    pushpull = true;                          // pushpull is true when pulling, false when repelling
     sf::Event event;
     win.setKeyRepeatEnabled(false);
     while (win.isOpen())
@@ -163,7 +130,7 @@ int main()
                     break;
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Escape) {win.close();}
-                    if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code]) {pushpull *= -1;}
+                    if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code]) {pushpull = !pushpull;}
                     if (event.key.code == sf::Keyboard::R && !keyState[event.key.code]) {current_level_num++; level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);}
                     keyState[event.key.code] = true;
                     break;
@@ -178,25 +145,34 @@ int main()
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
             pull_strength = sqrt(pow(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb1Position().x + level -> control_radius))), 2));
-            x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * -((pull_strength * pull_constant) * pushpull);
-            y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
-
+            if (pushpull == true)
+            {
+                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * -((pull_strength * pull_constant));
+                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * -((pull_strength * (pull_constant / 0.5f)));
+            }else{
+                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / -((pull_strength * pull_constant) * -1));
+                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / -((pull_strength * pull_constant / 0.5f) * -1));
+            }
             lines[0].position = sf::Vector2f(level -> GetControlOrb1Position().x + level -> control_radius, level -> GetControlOrb1Position().y + level -> control_radius);
             lines[1].position = sf::Vector2f((x + ball_r), (y + ball_r));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
             pull_strength = sqrt(pow(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb2Position().x + level -> control_radius))), 2));
-            x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * ((pull_strength * pull_constant) * pushpull);
-            y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
-
+            if (pushpull == true)
+            {
+                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * ((pull_strength * pull_constant));
+                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * -((pull_strength * (pull_constant / 0.5f)));
+            }else{
+                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / ((pull_strength * pull_constant) * -1));
+                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / -((pull_strength * (pull_constant / 0.5f)) * -1));
+            }
             lines[2].position = sf::Vector2f(level -> GetControlOrb2Position().x + level -> control_radius, level -> GetControlOrb2Position().y + level -> control_radius);
             lines[3].position = sf::Vector2f((x + ball_r), (y + ball_r));
         }
 
         prev_x = x;
         prev_y = y;
-
         y += y_speed;
         x += x_speed;
 
@@ -204,35 +180,11 @@ int main()
         if (detected_points[0] != 0)
         {
             sf::Vector2f col_tangent = AddVectors(detected_points, detection_points, (sqrt((x_speed * x_speed) + (y_speed * y_speed))));
-
             x_speed += (col_tangent.x) * i_friction_constant;
             y_speed += (col_tangent.y) * i_friction_constant;
-
             x = prev_x;
             y = prev_y;
-            //y += y_speed;
-            //x += x_speed;
         }
-        /*
-        is_collided = level->IsColliding(x, y, ball_r, 8);
-        if (is_collided != -1)
-        {
-            x = prev_x + (-x_speed);
-            y = prev_y + (-y_speed);
-            if (is_collided == 0 || is_collided == 4)
-            {
-                x_speed *= -1; x_speed *= d_friction_constant; y_speed *= i_friction_constant; x += x_speed;
-            }
-            else if (is_collided == 2 || is_collided == 6)
-            {
-                y_speed *= -1; x_speed *= i_friction_constant; y_speed *= d_friction_constant; y += y_speed;
-            }
-            else
-            {
-                x_speed *= -1; y_speed *= -1;; x_speed *= d_friction_constant; y_speed *= d_friction_constant; x += x_speed; y += y_speed;
-            }
-        }
-        */
         ball.setPosition(x, y);
         win.draw(level->GetSprite());
         win.draw(lines);

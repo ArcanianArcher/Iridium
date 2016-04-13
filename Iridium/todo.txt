@@ -24,6 +24,7 @@ Sound effects
 Game background music (PPPPPP? Music for different levels, menues, pause, etc.)
 Compile to exe
 Allow control orbs to work from any quadrant
+Rotation level
 
 
 Ongoing:
