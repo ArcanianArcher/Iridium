@@ -23,6 +23,7 @@ High Scores (saved in a high score txt file. option to wipe all high scores from
 Sound effects
 Game background music (PPPPPP? Music for different levels, menues, pause, etc.)
 Compile to exe
+Allow control orbs to work from any quadrant
 
 
 Ongoing:

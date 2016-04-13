@@ -16,19 +16,38 @@
 class Level
 {
 public:
+
     sf::Image level_image;
     sf::Texture level_texture;
     sf::Sprite level_sprite;
     sf::Color black = sf::Color::Black;
-    Level(int level_number)
+    int control_radius = 25;
+    sf::CircleShape control1;
+    sf::CircleShape control2;
+
+    Level(int level_number, int corb1_x, int corb1_y, int corb2_x, int corb2_y, sf::Color colour)
     {
         // constructor
         std::string file_path = "./levels/TL" + SSTR(level_number) + ".png";
         level_texture.loadFromFile(file_path);
         level_image.loadFromFile(file_path);
         level_sprite.setTexture(level_texture, true);
+        control1.setRadius(control_radius);
+        control2.setRadius(control_radius);
+        control1.setPosition(corb1_x, corb1_y);
+        control2.setPosition(corb2_x, corb2_y);
+        control1.setFillColor(colour);
+        control2.setFillColor(colour);
+
         std::cout << "new level: " << level_number << std::endl;
     };
+
+    void SetControlOrb1Position(int corb_x, int corb_y){control1.setPosition(corb_x, corb_y);}
+    void SetControlOrb2Position(int corb_x, int corb_y){control2.setPosition(corb_x, corb_y);}
+    void SetControlOrb1Colour(sf::Color colour){control1.setFillColor(colour);}
+    void SetControlOrb2Colour(sf::Color colour){control2.setFillColor(colour);}
+    sf::Vector2f GetControlOrb1Position(void){return control1.getPosition();}
+    sf::Vector2f GetControlOrb2Position(void){return control2.getPosition();}
 
     int *CollisionPoints(int x, int y, int r, int p)
     {
@@ -92,52 +111,40 @@ int main()
     win.setKeyRepeatEnabled(false);
 
     int current_level_num = 0;
-    Level* level = new Level(current_level_num);
+    Level* level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);
 
     bool keyState[sf::Keyboard::KeyCount];
     int is_collided;
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
-    int corb1_x, corb1_y, corb2_x, corb2_y, ball_r, corb_r, detection_points;
+    int ball_r, detection_points;
     float d_friction_constant, i_friction_constant;
-    corb1_y = corb2_y = 30;
-    corb1_x = 30;
-    corb2_x = 1000;
     ball_r = 25;
-    corb_r = 25;
+
     d_friction_constant = 0.3f;
     i_friction_constant = 0.95f;
     detection_points = 30;
 
     sf::VertexArray lines(sf::Lines, 4);
-
     sf::CircleShape ball(ball_r);
     ball.setFillColor(sf::Color::Green);
-
-    sf::CircleShape control1(corb_r);
-    control1.setFillColor(sf::Color::Red);
-    control1.setPosition(corb1_x, corb1_y);
-
-    sf::CircleShape control2(corb_r);
-    control2.setFillColor(sf::Color::Red);
-    control2.setPosition(corb2_x, corb2_y);
 
     float x, y, prev_x, prev_y, gravity, x_speed, y_speed, pull_strength, pull_constant;
     int pushpull;
     x = 515;
     y = 100;
-    gravity = 0.2f;
+    gravity = 0.1f;
     x_speed = y_speed = 0.f;
-    pull_constant = 0.0009f;
+    pull_constant = 0.0005f;
     pushpull = 1;                          // pushpull is 1 when pulling, -1 when repelling
     sf::Event event;
     win.setKeyRepeatEnabled(false);
     while (win.isOpen())
     {
         win.clear();
-        lines[0].position = sf::Vector2f(0, 0);
-        lines[1].position = sf::Vector2f(0, 0);
-        lines[2].position = sf::Vector2f(0, 0);
-        lines[3].position = sf::Vector2f(0, 0);
+        lines[0].position = sf::Vector2f(0, 0); lines[0].color = sf::Color::Blue;
+        lines[1].position = sf::Vector2f(0, 0); lines[1].color = sf::Color::Blue;
+        lines[2].position = sf::Vector2f(0, 0); lines[2].color = sf::Color::Blue;
+        lines[3].position = sf::Vector2f(0, 0); lines[3].color = sf::Color::Blue;
         y_speed += gravity;
 
         while (win.pollEvent(event))
@@ -150,7 +157,7 @@ int main()
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Escape) {win.close();}
                     if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code]) {pushpull *= -1;}
-                    if (event.key.code == sf::Keyboard::R && !keyState[event.key.code]) {current_level_num++; level = new Level(current_level_num);}
+                    if (event.key.code == sf::Keyboard::R && !keyState[event.key.code]) {current_level_num++; level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);}
                     keyState[event.key.code] = true;
                     break;
                 case sf::Event::KeyReleased:
@@ -163,20 +170,20 @@ int main()
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
-            pull_strength = sqrt(pow(fabs(((y + ball_r) - (corb1_y + corb_r))), 2) + pow(fabs(((x + corb_r) - (corb1_x + corb_r))), 2));
-            x_speed += (cos(atan(fabs(((y + ball_r) - (corb1_y + corb_r))) / fabs(((x + ball_r) - (corb1_x + corb_r)))))) * -((pull_strength * pull_constant) * pushpull);
-            y_speed += (sin(atan(fabs(((y + ball_r) - (corb1_y + corb_r))) / fabs(((x + ball_r) - (corb1_x + corb_r)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
+            pull_strength = sqrt(pow(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb1Position().x + level -> control_radius))), 2));
+            x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * -((pull_strength * pull_constant) * pushpull);
+            y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
 
-            lines[0].position = sf::Vector2f(corb1_x + corb_r, corb1_y + corb_r);
+            lines[0].position = sf::Vector2f(level -> GetControlOrb1Position().x + level -> control_radius, level -> GetControlOrb1Position().y + level -> control_radius);
             lines[1].position = sf::Vector2f((x + ball_r), (y + ball_r));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
-            pull_strength = sqrt(pow(fabs(((y + ball_r) - (corb2_y + corb_r))), 2) + pow(fabs(((x + corb_r) - (corb2_x + corb_r))), 2));
-            x_speed += (cos(atan(fabs(((y + ball_r) - (corb2_y + corb_r))) / fabs(((x + ball_r) - (corb2_x + corb_r)))))) * ((pull_strength * pull_constant) * pushpull);
-            y_speed += (sin(atan(fabs(((y + ball_r) - (corb2_y + corb_r))) / fabs(((x + ball_r) - (corb2_x + corb_r)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
+            pull_strength = sqrt(pow(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb2Position().x + level -> control_radius))), 2));
+            x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * ((pull_strength * pull_constant) * pushpull);
+            y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * -((pull_strength * (pull_constant / 0.5f)) * pushpull);
 
-            lines[2].position = sf::Vector2f(corb2_x + corb_r, corb2_y + corb_r);
+            lines[2].position = sf::Vector2f(level -> GetControlOrb2Position().x + level -> control_radius, level -> GetControlOrb2Position().y + level -> control_radius);
             lines[3].position = sf::Vector2f((x + ball_r), (y + ball_r));
         }
 
@@ -215,8 +222,8 @@ int main()
         win.draw(level->GetSprite());
         win.draw(lines);
         win.draw(ball);
-        win.draw(control1);
-        win.draw(control2);
+        win.draw(level -> control1);
+        win.draw(level -> control2);
         win.display();
     }
     return 0;
