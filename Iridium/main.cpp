@@ -92,9 +92,10 @@ public:
 
 
 
-sf::Vector2f AddVectors(int *points, int total_detection_points)
+sf::Vector2f AddVectors(int *points, int total_detection_points, double total_speed)
 {
     sf::Vector2f vector_total(0.f, 0.f);
+    double speed;
     for (int i = 0; i < points[0]; i++)
     {
         float angle = (((2 * points[i + 1]) * M_PI) / total_detection_points);
@@ -103,8 +104,9 @@ sf::Vector2f AddVectors(int *points, int total_detection_points)
 
         vector_total += v;
     }
+    //if (total_speed < 0.5){speed = 0.5;}else{speed = total_speed;}
     float length = sqrt((vector_total.x * vector_total.x) + (vector_total.y * vector_total.y));
-    sf::Vector2f u(vector_total.x / length, vector_total.y / length);
+    sf::Vector2f u((vector_total.x / length) * total_speed, (vector_total.y / length) * total_speed);
     return u;
 }
 
@@ -126,8 +128,7 @@ int main()
     float d_friction_constant, i_friction_constant;
     ball_r = 25;
 
-    d_friction_constant = 0.3f;
-    i_friction_constant = 0.95f;
+    i_friction_constant = 0.3f;
 
 
     sf::VertexArray lines(sf::Lines, 4);
@@ -193,8 +194,8 @@ int main()
             lines[3].position = sf::Vector2f((x + ball_r), (y + ball_r));
         }
 
-        //prev_x = x;
-        //prev_y = y;
+        prev_x = x;
+        prev_y = y;
 
         y += y_speed;
         x += x_speed;
@@ -202,12 +203,15 @@ int main()
         level->CollisionPoints(detected_points, x, y, ball_r, detection_points);
         if (detected_points[0] != 0)
         {
-            sf::Vector2f col_tangent = AddVectors(detected_points, detection_points);
-            std::cout<<col_tangent.x<<", "<<col_tangent.y<<std::endl;
-            x_speed *= col_tangent.x;
-            y_speed *= col_tangent.y;
-            y += y_speed;
-            x += x_speed;
+            sf::Vector2f col_tangent = AddVectors(detected_points, detection_points, (sqrt((x_speed * x_speed) + (y_speed * y_speed))));
+
+            x_speed += (col_tangent.x) * i_friction_constant;
+            y_speed += (col_tangent.y) * i_friction_constant;
+
+            x = prev_x;
+            y = prev_y;
+            //y += y_speed;
+            //x += x_speed;
         }
         /*
         is_collided = level->IsColliding(x, y, ball_r, 8);
