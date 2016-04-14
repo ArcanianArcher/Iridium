@@ -10,9 +10,8 @@ Drawing levels 11-20
 Drawing levels 21-30
 Drawing levels 31-40
 Drawing levels 41-50
-Good collision handelling (slippery curves)
+~ Good collision handelling (slippery curves) - Kinda done? The ball isn't bouncy anymore, but now it's too sticky...
 Implementing level modes (push level, pull level, both?)
-Implementing level control orb positions
 Main menu
 Option menu
 Pause menu (note: window out of focus event triggers pause)
@@ -23,7 +22,6 @@ High Scores (saved in a high score txt file. option to wipe all high scores from
 Sound effects
 Game background music (PPPPPP? Music for different levels, menues, pause, etc.)
 Compile to exe
-Allow control orbs to work from any quadrant
 Rotation level
 
 
