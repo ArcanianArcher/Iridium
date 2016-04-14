@@ -4,3 +4,5 @@ Iridium.layout
 Iridium.depend
 Iridium/Iridium.layout
 Iridium/Iridium.depend
+*.exe
+*.layout

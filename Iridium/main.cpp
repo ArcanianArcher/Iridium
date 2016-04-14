@@ -283,7 +283,8 @@ int main()
         }
         if (CollideState == 1)
         {
-            level = new Level(current_level_num + 1, 30, 30, 1000, 30, sf::Color::Red);
+            current_level_num++;
+            level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);
         }
         ball.setPosition(x, y);
         win.draw(level->GetSprite());
