@@ -61,7 +61,7 @@ public:
 
     void CollisionPoints(int *points, int x, int y, int r, int p)
     {
-        int num_points = 0, hit = 0;
+        int num_points = 0;
         sf::Color PointColour;
         for (int i = 0; i < p; i++)
         {
@@ -103,10 +103,9 @@ int main()
 
     bool keyState[sf::Keyboard::KeyCount];
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
-    int ball_r, CollideState;
+    int ball_r;
     const int detection_points = 36;
     int detected_points[detection_points + 1];
-    int test_variable_please_ignore[detection_points + 1];
     float i_friction_constant;
     ball_r = 25;
     i_friction_constant = 0.3f;
