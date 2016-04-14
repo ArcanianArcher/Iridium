@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+const double M_PI  =3.141592653589793238463;
 
 #define SSTR( x ) static_cast< std::ostringstream & >( \
         ( std::ostringstream() << std::dec << x ) ).str()
@@ -101,6 +102,7 @@ int main()
     int ball_r, CollideState;
     const int detection_points = 36;
     int detected_points[detection_points + 1];
+    int test_variable_please_ignore[detection_points + 1];
     float i_friction_constant;
     ball_r = 25;
     i_friction_constant = 0.3f;
@@ -278,6 +280,8 @@ int main()
             sf::Vector2f col_tangent = AddVectors(detected_points, detection_points, (sqrt((x_speed * x_speed) + (y_speed * y_speed))));
             x_speed += (col_tangent.x) * i_friction_constant;
             y_speed += (col_tangent.y) * i_friction_constant;
+            x += x_speed;
+            y += y_speed;
             x = prev_x;
             y = prev_y;
         }
