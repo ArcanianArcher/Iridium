@@ -106,7 +106,7 @@ public:
 
 
 
-    Game()
+    Game(sf::VertexArray line)
     {
         current_level_num = 0;
         x = 515;
@@ -115,7 +115,8 @@ public:
         gravity = 0.1f;
         i_friction_constant = 0.3f;
         pull_constant = 0.0005f;
-        lines.resize(4);
+        lines = line;
+        //lines.resize(4);
         //lines.append(sf::Lines);
         ball.setRadius(ball_r);
         ball.setFillColor(sf::Color::Green);
@@ -209,11 +210,12 @@ int main()
     win.setFramerateLimit(80);
     win.setKeyRepeatEnabled(false);
     sf::Event event;
+    sf::VertexArray lines(sf::Lines, 4);
     bool poll_event;
     bool keyState[sf::Keyboard::KeyCount];
     for(int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
     int game_state = 1; //main menu 0, game 1...
-    Game* game = new Game();
+    Game* game = new Game(lines);
 
     while (win.isOpen())
     {
