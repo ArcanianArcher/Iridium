@@ -1,4 +1,3 @@
-Level progression (finish area triggers level switch)
 Level switch visual effects
 Level design 1-10 (1-5 are tutorial levels)
 Level design 11-20
@@ -13,6 +12,7 @@ Drawing levels 41-50
 ~ Good collision handelling (slippery curves) - Kinda done? The ball isn't bouncy anymore, but now it's too sticky...
 Implementing level modes (push level, pull level, both?)
 Main menu
+Level Select menu
 Option menu
 Pause menu (note: window out of focus event triggers pause)
 Obstacles (level hazards, spikes, etc.)
@@ -28,5 +28,4 @@ Rotation level
 Ongoing:
 Refactor code.
 Optimize.
-
 
