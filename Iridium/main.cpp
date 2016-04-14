@@ -104,10 +104,9 @@ int main()
 
     bool keyState[sf::Keyboard::KeyCount];
     for (int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
-    int ball_r, CollideState;
+    int ball_r;
     int Quadrant_m1 = 1;
     int Quadrant_m2 = 1;
-    int ball_r;
     const int detection_points = 36;
     int detected_points[detection_points + 1];
     float i_friction_constant;

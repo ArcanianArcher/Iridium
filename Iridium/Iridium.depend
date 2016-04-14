@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1460554925 source:c:\users\kian\desktop\iridium\iridium\main.cpp
+1460645447 source:c:\users\kian\desktop\iridium\iridium\main.cpp
 	<SFML/Graphics.hpp>
 	<stdlib.h>
 	<math.h>
