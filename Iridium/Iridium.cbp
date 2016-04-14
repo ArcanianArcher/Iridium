@@ -38,6 +38,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=c++11" />
 			<Add directory="C:/Program Files (x86)/CodeBlocks/sfml/include" />
 		</Compiler>
 		<Linker>

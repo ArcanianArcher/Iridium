@@ -7,7 +7,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+
 const double PI  =3.141592653589793238463;
+
 #define SSTR( x ) static_cast< std::ostringstream & >( \
         ( std::ostringstream() << std::dec << x ) ).str()
 
@@ -48,10 +50,19 @@ public:
     sf::Vector2f GetControlOrb2Position(void){return control2.getPosition();}
     sf::Sprite GetSprite(){return level_sprite;}
 
-    int CollisionPoints(int *points, int x, int y, int r, int p)
-    // hit == 0 : null | hit == 1 : level end | hit == 2 : ?
+    bool CheckEnding(int x, int y, int r)
     {
-        int num_points = 0, hit = 0;
+        if (level_image.getPixel((x + r), (y + r)) == sf::Color(128,0,128))
+        {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    void CollisionPoints(int *points, int x, int y, int r, int p)
+    {
+        int num_points = 0;
         sf::Color PointColour;
         for (int i = 0; i < p; i++)
         {
@@ -61,13 +72,8 @@ public:
                 num_points++;
                 points[num_points] = i;
             }
-            if (PointColour == sf::Color(128,0,128))
-            {
-                hit = 1;
-            }
         }
         points[0] = num_points;
-        return hit;
     }
 };
 
@@ -101,6 +107,7 @@ int main()
     int ball_r, CollideState;
     int Quadrant_m1 = 1;
     int Quadrant_m2 = 1;
+    int ball_r;
     const int detection_points = 36;
     int detected_points[detection_points + 1];
     float i_friction_constant;
@@ -192,16 +199,18 @@ int main()
         y += y_speed;
         x += x_speed;
 
-        CollideState = level->CollisionPoints(detected_points, x, y, ball_r, detection_points);
+        level->CollisionPoints(detected_points, x, y, ball_r, detection_points);
         if (detected_points[0] != 0)
         {
             sf::Vector2f col_tangent = AddVectors(detected_points, detection_points, (sqrt((x_speed * x_speed) + (y_speed * y_speed))));
             x_speed += (col_tangent.x) * i_friction_constant;
             y_speed += (col_tangent.y) * i_friction_constant;
+            x += x_speed;
+            y += y_speed;
             x = prev_x;
             y = prev_y;
         }
-        if (CollideState == 1)
+        if (level->CheckEnding(x, y, ball_r))
         {
             current_level_num++;
             level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);
