@@ -23,6 +23,7 @@ Sound effects
 Game background music (PPPPPP? Music for different levels, menues, pause, etc.)
 Compile to exe
 Rotation level
+level info taken from colourkey in corner of mask file
 
 
 Ongoing:

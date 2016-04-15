@@ -104,8 +104,6 @@ public:
     sf::CircleShape ball;
     Level* level;
 
-
-
     Game(sf::VertexArray line)
     {
         current_level_num = 0;
@@ -120,7 +118,6 @@ public:
         //lines.append(sf::Lines);
         ball.setRadius(ball_r);
         ball.setFillColor(sf::Color::Green);
-
         level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);
     }
 
@@ -131,6 +128,7 @@ public:
         lines[2].position = sf::Vector2f(0, 0); lines[2].color = sf::Color::Blue;
         lines[3].position = sf::Vector2f(0, 0); lines[3].color = sf::Color::Blue;
     }
+
     void RightOrb()
     {
         if ((x - level -> GetControlOrb2Position().x > 0) && (y - level -> GetControlOrb2Position().y <= 0)) {Quadrant_m1 = -1; Quadrant_m2 = 1;}       // Q1
@@ -143,12 +141,13 @@ public:
                 x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * Quadrant_m1 * ((pull_strength * pull_constant));
                 y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * Quadrant_m2 * ((pull_strength * (pull_constant / 0.5f)));
             }else{
-                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / Quadrant_m1 * ((pull_strength * pull_constant) * -1)) * 0.1f;
-                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / Quadrant_m2 * ((pull_strength * pull_constant / 0.5f) * -1)) * 0.1f;
+                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / Quadrant_m1 * ((pull_strength * pull_constant) * -1)) * 0.5f;
+                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / Quadrant_m2 * ((pull_strength * pull_constant / 0.5f) * -1)) * 0.5f;
             }
-            lines[0].position = sf::Vector2f(level -> GetControlOrb2Position().x + level -> control_radius, level -> GetControlOrb2Position().y + level -> control_radius);
-            lines[1].position = sf::Vector2f((x + ball_r), (y + ball_r));
+            lines[2].position = sf::Vector2f(level -> GetControlOrb2Position().x + level -> control_radius, level -> GetControlOrb2Position().y + level -> control_radius);
+            lines[3].position = sf::Vector2f((x + ball_r), (y + ball_r));
     }
+
     void LeftOrb()
     {
         if ((x - level -> GetControlOrb1Position().x > 0) && (y - level -> GetControlOrb1Position().y <= 0)) {Quadrant_m1 = -1; Quadrant_m2 = 1;}       // Q1
@@ -161,16 +160,18 @@ public:
                 x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * Quadrant_m1 * ((pull_strength * pull_constant));
                 y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * Quadrant_m2 * ((pull_strength * (pull_constant / 0.5f)));
             }else{
-                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / Quadrant_m1 * ((pull_strength * pull_constant) * -1)) * 0.1f;
-                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / Quadrant_m2 * ((pull_strength * pull_constant / 0.5f) * -1)) * 0.1f;
+                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / Quadrant_m1 * ((pull_strength * pull_constant) * -1)) * 0.5f;
+                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / Quadrant_m2 * ((pull_strength * pull_constant / 0.5f) * -1)) * 0.5f;
             }
             lines[0].position = sf::Vector2f(level -> GetControlOrb1Position().x + level -> control_radius, level -> GetControlOrb1Position().y + level -> control_radius);
             lines[1].position = sf::Vector2f((x + ball_r), (y + ball_r));
     }
+
     void SwitchPushPull()
     {
         pushpull = !pushpull;
     }
+
     void Movement()
     {
         y_speed += gravity;
@@ -196,10 +197,7 @@ public:
             level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);
         }
         ball.setPosition(x, y);
-
-
     }
-
 };
 
 
@@ -220,24 +218,6 @@ int main()
     while (win.isOpen())
     {
         win.clear();
-        /*
-        poll_event = win.pollEvent(event);
-        while (poll_event)
-        {
-            switch (event.type)
-            {
-            case sf::Event::Closed:
-                win.close();
-                break;
-            case sf::Event::KeyPressed:
-                if (event.key.code == sf::Keyboard::Escape) {win.close();}
-                break;
-            case sf::Event::KeyReleased:
-                break;
-            default:
-                break;
-            }
-        }*/
         if (game_state == 1)
         {
             game->ResetLines();
