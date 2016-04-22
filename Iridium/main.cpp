@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <string.h>
 
-const double PI  =3.141592653589793238463;
+const double PI = 3.141592653589793238463;
 
 #define SSTR( x ) static_cast< std::ostringstream & >( \
         ( std::ostringstream() << std::dec << x ) ).str()
@@ -41,7 +41,7 @@ public:
     Level(int level_number, int corb1_x, int corb1_y, int corb2_x, int corb2_y, sf::Color colour)
     {
         // constructor
-        std::string file_path = "./levels/TL" + SSTR(level_number) + ".png";
+        std::string file_path = "./levels/TL" + SSTR(level_number) + ".data";
         level_texture.loadFromFile(file_path);
         level_image.loadFromFile(file_path);
         level_sprite.setTexture(level_texture, true);
@@ -88,9 +88,11 @@ public:
                 num_points++;
                 points[num_points] = i;
             }
-            if (PointColour == sf::Color::Yellow)
+            if (PointColour == sf::Color::Red)
             {
+                //std::cout << "Hello\n";
                 num_points = -1;
+                points[0] = num_points;
                 return;
             }
         }
@@ -203,9 +205,12 @@ public:
                 x = prev_x;
                 y = prev_y;
             }
-            else
+            else // collided with obstacle
             {
-                std::cout << "Collided with obstacle. \n";
+                x = level->GetBallX();
+                y = level->GetBallY();
+                x_speed = 0;
+                y_speed = 0;
             }
         }
         if (level->CheckEnding(x, y, ball_r))
