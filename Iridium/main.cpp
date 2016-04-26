@@ -27,6 +27,37 @@ sf::Vector2f AddVectors(int *points, int total_detection_points, double total_sp
     return u;
 }
 
+class Collectable
+{
+public:
+    bool collected;
+    int x_pos;
+    int y_pos;
+    int radius;
+    sf::CircleShape ball;
+    Collectable(int x, int y)
+    {
+        x_pos = x;
+        y_pos = y;
+        radius = 10;
+        collected = false;
+        ball.setFillColor(sf::Color::Blue);
+        ball.setRadius(radius);
+        ball.setPosition(x_pos, y_pos);
+    }
+
+    bool IsColliding(int x, int y, int r)
+    {
+        if (sqrt(pow(abs(x - x_pos), 2) + pow(abs(y - y_pos), 2)) < (radius + r))
+        {
+            ball.setFillColor(sf::Color::Yellow);
+            collected = true;
+            return true;
+        }
+        return false;
+    }
+};
+
 class LevelData
 {
 public:
@@ -43,8 +74,8 @@ public:
     LevelData()
     {
         Levels.resize(50);
-        Levels[0] = {180, 180, 15, 30, 30, 1000, 30, 30, 0, 0, 0, 0, 0, 0};
-        Levels[1] = {90, 630, 15, 30, 30, 1000, 30, 30, 5, 0, 0, 0, 0, 0};
+        Levels[0] = {180, 180, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
+        Levels[1] = {90, 630, 15, 30, 30, 1000, 30, 30, 5, 315, 225, 315, 495, 540, 360, 765, 225, 765, 495, 0, 0, 0, 0};
     }
 
 };
@@ -64,6 +95,8 @@ public:
     int bally;
     int ballr;
     int numCollectables, numEnemys, numPortals;
+    Collectable* collectables[50];
+    //collectables.resize(50);
     Level(int level_number, sf::Color colour)
     {
         // constructor
@@ -80,11 +113,12 @@ public:
         control2.setRadius(leveldata->Levels[level_number][7]);
         control1.setPosition(leveldata->Levels[level_number][3], leveldata->Levels[level_number][4]);
         control2.setPosition(leveldata->Levels[level_number][5], leveldata->Levels[level_number][6]);
-        /*numCollectables = levelData[8];
+        numCollectables = leveldata->Levels[level_number][8];
         for (int i = 0; i < numCollectables; i++)
         {
-            break;
+            collectables[i] = new Collectable(leveldata->Levels[level_number][(9 + (2 * i))], leveldata->Levels[level_number][(10 + (2 * i))]);
         }
+        /*
         numEnemys = levelData[10];
         for (int i = 0; i < numEnemys; i++)
         {
@@ -100,7 +134,6 @@ public:
         control2.setFillColor(colour);
 
         std::cout << "new level: " << level_number << std::endl;
-        std::cout << ballx << bally << ballr << std::endl;
     };
 
     int GetBallX(){return (level_image.getPixel(0, 0).r + level_image.getPixel(0, 0).g + level_image.getPixel(0, 0).b);}// + level_image.getPixel(1, 1).a);}
@@ -136,7 +169,6 @@ public:
             }
             if (PointColour == sf::Color::Red)
             {
-                //std::cout << "Hello\n";
                 num_points = -1;
                 points[0] = num_points;
                 return;
@@ -156,6 +188,7 @@ public:
     int detected_points[36 + 1];
     float x, y, prev_x, prev_y, gravity, x_speed, y_speed, pull_strength, pull_constant, i_friction_constant;
     bool pushpull = true;
+    bool all_collected;
     sf::VertexArray lines;
     sf::CircleShape ball;
     Level* level;
@@ -170,9 +203,9 @@ public:
         pull_constant = 0.0005f;
         lines = line;
         ball.setFillColor(sf::Color::Green);
+        ball.setRadius(level->ballr);
         x = level->bally;
         y = level->ballx;
-        ball.setRadius(level->ballr);
     }
 
     void ResetLines()
@@ -235,6 +268,10 @@ public:
         x += x_speed;
 
         level->CollisionPoints(detected_points, x, y, ball.getRadius(), detection_points);
+        for (int i = 0; i < level->numCollectables; i++)
+        {
+            level->collectables[i]->IsColliding(x, y, level->ballr);
+        }
         if (detected_points[0] != 0)
         {
             if (detected_points[0] > 0)
@@ -257,12 +294,22 @@ public:
         }
         if (level->CheckEnding(x, y, level -> ballr))
         {
-            current_level_num++;
-            level = new Level(current_level_num, sf::Color::Red);
-            x = level->ballx;
-            y = level->bally;
-            ball.setRadius(level->ballr);
-
+            all_collected = true;
+            for (int i = 0; i < level->numCollectables; i++)
+            {
+                if (level->collectables[i]->collected == false)
+                {
+                    all_collected = false;
+                }
+            }
+            if (all_collected)
+            {
+                current_level_num++;
+                level = new Level(current_level_num, sf::Color::Red);
+                x = level->ballx;
+                y = level->bally;
+                ball.setRadius(level->ballr);
+            }
         }
         ball.setPosition(x, y);
     }
@@ -320,6 +367,10 @@ int main()
             }
 
             win.draw(game->level->GetSprite());
+            for (int i = 0; i < game->level->numCollectables; i++)
+            {
+                win.draw(game->level->collectables[i]->ball);
+            }
             win.draw(game->lines);
             win.draw(game->ball);
             win.draw(game->level -> control1);
