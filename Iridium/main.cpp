@@ -27,6 +27,46 @@ sf::Vector2f AddVectors(int *points, int total_detection_points, double total_sp
     return u;
 }
 
+class LevelData
+{
+public:
+    /*
+    Level
+    ballx, bally, ballr, corb1x, corb1y, corb2x, corb2y, corbr
+    #collectibles, coll1x, coll1y, ...
+    #enemys, enemy1x1, enemy1y1, enemy1x2, enemy1y2, ...
+    #portals, portala1x, portala1y, portala1exitx, portala1exity, ...
+    */
+    int L1[100];
+    int L2[100];
+    int *Levels[300];
+    LevelData()
+    {
+        //[150, 250, 15, 30, 30, 1000, 30, 30, 0, 0, 0, 0, 0, 0]
+        L1[0] = 150;
+        L1[1] = 250;
+        L1[2] = 15;
+        L1[3] = 30;
+        L1[4] = 30;
+        L1[5] = 1000;
+        L1[6] = 30;
+        L1[7] = 30;
+        L1[8] = 0;
+        L1[9] = 0;
+        L1[10] = 0;
+        L1[11] = 0;
+        L1[12] = 0;
+        L1[13] = 0;
+
+        //int L2 = [500, 275, 30, 30, 30, 1000, 30, 30, 0, [], 0, [], 0, []];
+        L2[0] = 0;
+        L2[1] = 0;
+        Levels[0] = L1;
+        Levels[1] = L2;
+    }
+
+};
+
 class Level
 {
 public:
@@ -34,21 +74,47 @@ public:
     sf::Image level_image;
     sf::Texture level_texture;
     sf::Sprite level_sprite;
-    int control_radius = 25;
     sf::CircleShape control1;
     sf::CircleShape control2;
+    int LevelDat[300];
+    int levelData[100];
+    int ballx;
+    int bally;
+    int ballr;
+    int numCollectables, numEnemys, numPortals;
+    LevelData* levelDat;
 
-    Level(int level_number, int corb1_x, int corb1_y, int corb2_x, int corb2_y, sf::Color colour)
+    Level(int level_number, sf::Color colour)
     {
         // constructor
+        levelDat = new LevelData();
         std::string file_path = "./levels/TL" + SSTR(level_number) + ".data";
         level_texture.loadFromFile(file_path);
         level_image.loadFromFile(file_path);
         level_sprite.setTexture(level_texture, true);
-        control1.setRadius(control_radius);
-        control2.setRadius(control_radius);
-        control1.setPosition(corb1_x, corb1_y);
-        control2.setPosition(corb2_x, corb2_y);
+        levelData = LevelDat[level_number - 1];
+        ballx = levelData[0];
+        bally = levelData[1];
+        ballr = levelData[2];
+        control1.setRadius(levelData[7]);
+        control2.setRadius(levelData[7]);
+        control1.setPosition(levelData[3], levelData[4]);
+        control2.setPosition(levelData[5], levelData[6]);
+        numCollectables = levelData[8];
+        for (int i = 0; i < numCollectables; i++)
+        {
+            break;
+        }
+        numEnemys = levelData[10];
+        for (int i = 0; i < numEnemys; i++)
+        {
+            break;
+        }
+        numPortals = levelData[12];
+        for (int i = 0; i < numPortals; i++)
+        {
+            break;
+        }
         control1.setFillColor(colour);
         control2.setFillColor(colour);
 
@@ -58,8 +124,6 @@ public:
     int GetBallX(){return (level_image.getPixel(0, 0).r + level_image.getPixel(0, 0).g + level_image.getPixel(0, 0).b);}// + level_image.getPixel(1, 1).a);}
     int GetBallY(){return (level_image.getPixel(1, 0).r + level_image.getPixel(1, 0).g + level_image.getPixel(1, 0).b);}
     int GetBallR(){return (level_image.getPixel(2, 0).r);}
-    void SetControlOrb1Position(int corb_x, int corb_y){control1.setPosition(corb_x, corb_y);}
-    void SetControlOrb2Position(int corb_x, int corb_y){control2.setPosition(corb_x, corb_y);}
     void SetControlOrb1Colour(sf::Color colour){control1.setFillColor(colour);}
     void SetControlOrb2Colour(sf::Color colour){control2.setFillColor(colour);}
     sf::Vector2f GetControlOrb1Position(void){return control1.getPosition();}
@@ -104,7 +168,6 @@ class Game
 {
 public:
     int current_level_num;
-    int ball_r = 25;
     int Quadrant_m1 = 1;
     int Quadrant_m2 = 1;
     int detection_points = 36;
@@ -117,20 +180,17 @@ public:
 
     Game(sf::VertexArray line)
     {
+        level = new Level(current_level_num, sf::Color::Red);
         current_level_num = 0;
-        x = 515;
-        y = 100;
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
         i_friction_constant = 0.3f;
         pull_constant = 0.0005f;
         lines = line;
-        ball.setRadius(ball_r);
         ball.setFillColor(sf::Color::Green);
-        level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);
-        x = level->GetBallX();
-        y = level->GetBallY();
-        ball.setRadius(level->GetBallR());
+        x = level->bally;
+        y = level->ballx;
+        ball.setRadius(level->ballr);
     }
 
     void ResetLines()
@@ -217,9 +277,10 @@ public:
         {
             current_level_num++;
             level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);
-            //x = level->GetBallX();
-            //y = level->GetBallY();
-            //ball.setRadius(level->GetBallR());
+            x = level->ballx;
+            y = level->bally;
+            ball.setRadius(level->ballr)
+
         }
         ball.setPosition(x, y);
     }
