@@ -37,32 +37,13 @@ public:
     #enemys, enemy1x1, enemy1y1, enemy1x2, enemy1y2, ...
     #portals, portala1x, portala1y, portala1exitx, portala1exity, ...
     */
-    int L1[100];
-    int L2[100];
-    int *Levels[300];
+
+    std::vector<std::vector<int>> Levels;
+
     LevelData()
     {
-        //[150, 250, 15, 30, 30, 1000, 30, 30, 0, 0, 0, 0, 0, 0]
-        L1[0] = 150;
-        L1[1] = 250;
-        L1[2] = 15;
-        L1[3] = 30;
-        L1[4] = 30;
-        L1[5] = 1000;
-        L1[6] = 30;
-        L1[7] = 30;
-        L1[8] = 0;
-        L1[9] = 0;
-        L1[10] = 0;
-        L1[11] = 0;
-        L1[12] = 0;
-        L1[13] = 0;
-
-        //int L2 = [500, 275, 30, 30, 30, 1000, 30, 30, 0, [], 0, [], 0, []];
-        L2[0] = 0;
-        L2[1] = 0;
-        Levels[0] = L1;
-        Levels[1] = L2;
+        Levels.resize(50);
+        Levels[0] = {180, 180, 15, 30, 30, 1000, 30, 30, 0, 0, 0, 0, 0, 0};
     }
 
 };
@@ -76,31 +57,29 @@ public:
     sf::Sprite level_sprite;
     sf::CircleShape control1;
     sf::CircleShape control2;
-    int LevelDat[300];
-    int levelData[100];
+    int control_radius;// = 25;
+    LevelData* leveldata;
     int ballx;
     int bally;
     int ballr;
     int numCollectables, numEnemys, numPortals;
-    LevelData* levelDat;
-
     Level(int level_number, sf::Color colour)
     {
         // constructor
-        levelDat = new LevelData();
-        std::string file_path = "./levels/TL" + SSTR(level_number) + ".data";
+        leveldata = new LevelData();
+        std::string file_path = "./levels/M" + SSTR(level_number + 1) + ".png";
         level_texture.loadFromFile(file_path);
         level_image.loadFromFile(file_path);
         level_sprite.setTexture(level_texture, true);
-        levelData = LevelDat[level_number - 1];
-        ballx = levelData[0];
-        bally = levelData[1];
-        ballr = levelData[2];
-        control1.setRadius(levelData[7]);
-        control2.setRadius(levelData[7]);
-        control1.setPosition(levelData[3], levelData[4]);
-        control2.setPosition(levelData[5], levelData[6]);
-        numCollectables = levelData[8];
+        control_radius = leveldata->Levels[level_number][7];
+        ballx = leveldata->Levels[level_number][0];
+        bally = leveldata->Levels[level_number][1];
+        ballr = leveldata->Levels[level_number][2];
+        control1.setRadius(leveldata->Levels[level_number][7]);
+        control2.setRadius(leveldata->Levels[level_number][7]);
+        control1.setPosition(leveldata->Levels[level_number][3], leveldata->Levels[level_number][4]);
+        control2.setPosition(leveldata->Levels[level_number][5], leveldata->Levels[level_number][6]);
+        /*numCollectables = levelData[8];
         for (int i = 0; i < numCollectables; i++)
         {
             break;
@@ -115,10 +94,12 @@ public:
         {
             break;
         }
+        */
         control1.setFillColor(colour);
         control2.setFillColor(colour);
 
         std::cout << "new level: " << level_number << std::endl;
+        std::cout << ballx << bally << ballr << std::endl;
     };
 
     int GetBallX(){return (level_image.getPixel(0, 0).r + level_image.getPixel(0, 0).g + level_image.getPixel(0, 0).b);}// + level_image.getPixel(1, 1).a);}
@@ -180,8 +161,8 @@ public:
 
     Game(sf::VertexArray line)
     {
-        level = new Level(current_level_num, sf::Color::Red);
         current_level_num = 0;
+        level = new Level(current_level_num, sf::Color::Red);
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
         i_friction_constant = 0.3f;
@@ -207,14 +188,14 @@ public:
             else if ((x - level -> GetControlOrb2Position().x <= 0) && (y - level -> GetControlOrb2Position().y < 0)) {Quadrant_m1 = 1; Quadrant_m2 = 1;}   // Q2
             else if ((x - level -> GetControlOrb2Position().x < 0) && (y - level -> GetControlOrb2Position().y >= 0)) {Quadrant_m1 = 1; Quadrant_m2 = -1;}  // Q3
             else {Quadrant_m1 = -1; Quadrant_m2 = -1;}                                                                                                      // Q4
-            pull_strength = (sqrt(pow(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb2Position().x + level -> control_radius))), 2))) * 0.9f;
+            pull_strength = (sqrt(pow(fabs(((y + level -> ballr) - (level -> GetControlOrb2Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb2Position().x + level -> control_radius))), 2))) * 0.9f;
             if (pushpull == true)
             {
-                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * Quadrant_m1 * ((pull_strength * pull_constant));
-                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * Quadrant_m2 * ((pull_strength * (pull_constant / 0.5f)));
+                x_speed += (cos(atan(fabs(((y + level -> ballr) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + level -> ballr) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * Quadrant_m1 * ((pull_strength * pull_constant));
+                y_speed += (sin(atan(fabs(((y + level -> ballr) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + level -> ballr) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * Quadrant_m2 * ((pull_strength * (pull_constant / 0.5f)));
             }else{
-                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / Quadrant_m1 * ((pull_strength * pull_constant) * -1)) * 0.5f;
-                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / Quadrant_m2 * ((pull_strength * pull_constant / 0.5f) * -1)) * 0.5f;
+                x_speed += (cos(atan(fabs(((y + level -> ballr) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + level -> ballr) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / Quadrant_m1 * ((pull_strength * pull_constant) * -1)) * 0.5f;
+                y_speed += (sin(atan(fabs(((y + level -> ballr) - (level -> GetControlOrb2Position().y + level -> control_radius))) / fabs(((x + level -> ballr) - (level -> GetControlOrb2Position().x + level -> control_radius)))))) * (1 / Quadrant_m2 * ((pull_strength * pull_constant / 0.5f) * -1)) * 0.5f;
             }
             lines[2].position = sf::Vector2f(level -> GetControlOrb2Position().x + level -> control_radius, level -> GetControlOrb2Position().y + level -> control_radius);
             lines[3].position = sf::Vector2f((x + ball.getRadius()), (y + ball.getRadius()));
@@ -226,14 +207,14 @@ public:
             else if ((x - level -> GetControlOrb1Position().x <= 0) && (y - level -> GetControlOrb1Position().y < 0)) {Quadrant_m1 = 1; Quadrant_m2 = 1;}   // Q2
             else if ((x - level -> GetControlOrb1Position().x < 0) && (y - level -> GetControlOrb1Position().y >= 0)) {Quadrant_m1 = 1; Quadrant_m2 = -1;}  // Q3
             else {Quadrant_m1 = -1; Quadrant_m2 = -1;}                                                                                                      // Q4
-            pull_strength = (sqrt(pow(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb1Position().x + level -> control_radius))), 2))) * 0.9f;
+            pull_strength = (sqrt(pow(fabs(((y + level -> ballr) - (level -> GetControlOrb1Position().y + level -> control_radius))), 2) + pow(fabs(((x + level -> control_radius) - (level -> GetControlOrb1Position().x + level -> control_radius))), 2))) * 0.9f;
             if (pushpull == true)
             {
-                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * Quadrant_m1 * ((pull_strength * pull_constant));
-                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * Quadrant_m2 * ((pull_strength * (pull_constant / 0.5f)));
+                x_speed += (cos(atan(fabs(((y + level -> ballr) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + level -> ballr) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * Quadrant_m1 * ((pull_strength * pull_constant));
+                y_speed += (sin(atan(fabs(((y + level -> ballr) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + level -> ballr) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * Quadrant_m2 * ((pull_strength * (pull_constant / 0.5f)));
             }else{
-                x_speed += (cos(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / Quadrant_m1 * ((pull_strength * pull_constant) * -1)) * 0.5f;
-                y_speed += (sin(atan(fabs(((y + ball_r) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + ball_r) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / Quadrant_m2 * ((pull_strength * pull_constant / 0.5f) * -1)) * 0.5f;
+                x_speed += (cos(atan(fabs(((y + level -> ballr) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + level -> ballr) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / Quadrant_m1 * ((pull_strength * pull_constant) * -1)) * 0.5f;
+                y_speed += (sin(atan(fabs(((y + level -> ballr) - (level -> GetControlOrb1Position().y + level -> control_radius))) / fabs(((x + level -> ballr) - (level -> GetControlOrb1Position().x + level -> control_radius)))))) * (1 / Quadrant_m2 * ((pull_strength * pull_constant / 0.5f) * -1)) * 0.5f;
             }
             lines[0].position = sf::Vector2f(level -> GetControlOrb1Position().x + level -> control_radius, level -> GetControlOrb1Position().y + level -> control_radius);
             lines[1].position = sf::Vector2f((x + ball.getRadius()), (y + ball.getRadius()));
@@ -273,13 +254,13 @@ public:
                 y_speed = 0;
             }
         }
-        if (level->CheckEnding(x, y, ball_r))
+        if (level->CheckEnding(x, y, level -> ballr))
         {
             current_level_num++;
-            level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);
+            level = new Level(current_level_num, sf::Color::Red);
             x = level->ballx;
             y = level->bally;
-            ball.setRadius(level->ballr)
+            ball.setRadius(level->ballr);
 
         }
         ball.setPosition(x, y);
