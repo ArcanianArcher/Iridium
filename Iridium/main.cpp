@@ -48,7 +48,7 @@ public:
 
     bool IsColliding(int x, int y, int r)
     {
-        if (sqrt(pow(abs(x - x_pos), 2) + pow(abs(y - y_pos), 2)) < (radius + r))
+        if (sqrt(pow(abs((x + r) - (x_pos + radius)), 2) + pow(abs((y + r) - (y_pos + radius)), 2)) < (radius + r))
         {
             ball.setFillColor(sf::Color::Yellow);
             collected = true;
@@ -74,10 +74,11 @@ public:
     LevelData()
     {
         Levels.resize(50);
-        Levels[0] = {180, 180, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
-        Levels[1] = {90, 630, 15, 30, 30, 1000, 30, 30, 5, 315, 225, 315, 495, 540, 360, 765, 225, 765, 495, 0, 0, 0, 0};
+        Levels[0] = {165, 165, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
+        Levels[1] = {075, 615, 15, 30, 30, 1000, 30, 30, 5, 300, 210, 300, 480, 525, 345, 750, 210, 750, 480, 0, 0, 0, 0};
+        Levels[2] = {165, 255, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
+        Levels[3] = {075, 615, 15, 30, 30, 1000, 30, 30, 3, 210, 180, 525, 180, 840, 180, 0, 0, 0, 0};
     }
-
 };
 
 class Level
@@ -279,10 +280,10 @@ public:
                 sf::Vector2f col_tangent = AddVectors(detected_points, detection_points, (sqrt((x_speed * x_speed) + (y_speed * y_speed))));
                 x_speed += (col_tangent.x) * i_friction_constant;
                 y_speed += (col_tangent.y) * i_friction_constant;
-                x += x_speed;
-                y += y_speed;
                 x = prev_x;
                 y = prev_y;
+                //x += x_speed;
+                //y += y_speed;
             }
             else // collided with obstacle
             {
