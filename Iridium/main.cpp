@@ -58,6 +58,60 @@ public:
     }
 };
 
+class Portal
+{
+public:
+    bool teleported;
+    int x1_pos;
+    int y1_pos;
+    int x2_pos;
+    int y2_pos;
+    int radius;
+    sf::CircleShape portal1;
+    sf::CircleShape portal2;
+
+    Portal(int x1, int y1, int x2, int y2)
+    {
+        x1_pos = x1;
+        y1_pos = y1;
+        x2_pos = x2;
+        y2_pos = y2;
+        radius = 20;
+        teleported = false;
+        portal1.setFillColor(sf::Color(0,150,215));
+        portal1.setRadius(radius);
+        portal1.setPosition(x1_pos, y1_pos);
+        portal2.setFillColor(sf::Color(255,125,0));
+        portal2.setRadius(radius);
+        portal2.setPosition(x2_pos, y2_pos);
+    }
+    void teleport (int *xp, int *yp, bool portal) // portal 1 is true, portal 2 is false
+    {
+        int& x = *xp;
+        int& y = *yp;
+        if (teleported == false)
+        {
+            teleported = true;
+            if (portal){x = x2_pos; y = y2_pos;}
+            else {x = x1_pos; y = y1_pos;}
+        }
+    }
+    bool IsColliding(int *xp, int *yp, int r, int portalnum)
+    {
+        int x = *xp;
+        int y = *yp;
+        if (sqrt(pow(abs((x + r) - (x1_pos + radius)), 2) + pow(abs((y + r) - (y1_pos + radius)), 2)) < (r))
+        {
+            teleport(xp, yp, false);
+        }
+        else if (sqrt(pow(abs((x + r) - (x2_pos + radius)), 2) + pow(abs((y + r) - (y2_pos + radius)), 2)) < (r))
+        {
+            teleport(xp, yp, true);
+        }
+        else {teleported = false;}
+    }
+};
+
 class LevelData
 {
 public:
