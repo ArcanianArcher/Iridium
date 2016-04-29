@@ -85,10 +85,11 @@ public:
         portal2.setRadius(radius);
         portal2.setPosition(x2_pos, y2_pos);
     }
-    void teleport (int *xp, int *yp, bool portal) // portal 1 is true, portal 2 is false
+    void teleport (float& xp, float& yp, bool portal) // portal 1 is true, portal 2 is false
     {
-        int& x = *xp;
-        int& y = *yp;
+        float x = xp;
+        float y = yp;
+        std::cout<<"teleported \n";
         if (teleported == false)
         {
             teleported = true;
@@ -96,10 +97,11 @@ public:
             else {x = x1_pos; y = y1_pos;}
         }
     }
-    bool IsColliding(int *xp, int *yp, int r, int portalnum)
+    void IsColliding(float& xp, float& yp, int& rp)
     {
-        int x = *xp;
-        int y = *yp;
+        int x = xp;
+        int y = yp;
+        int r = rp;
         if (sqrt(pow(abs((x + r) - (x1_pos + radius)), 2) + pow(abs((y + r) - (y1_pos + radius)), 2)) < (r))
         {
             teleport(xp, yp, false);
@@ -133,7 +135,7 @@ public:
         Levels[2] = {165, 255, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
         Levels[3] = {075, 615, 15, 30, 30, 1000, 30, 30, 3, 215, 185, 530, 185, 845, 185, 0, 0, 0};
         Levels[4] = {345, 435, 15, 25, 295, 1015, 295, 20, 6, 305, 148, 395, 148, 485, 148, 575, 148, 665, 148, 755, 148, 0, 0, 0, 0};
-        Levels[5] = {};
+        Levels[5] = {125, 75, 15, 30, 30, 1000, 30, 30, 0, 0, 3, 125, 600, 380, 75, 380, 600, 650, 75, 650, 600, 920, 75};
         Levels[6] = {};
         Levels[7] = {};
         Levels[8] = {};
@@ -198,6 +200,7 @@ public:
     int numCollectables, numEnemys, numPortals;
     Collectable* collectables[50];
     //collectables.resize(50);
+    Portal* portals[50];
     Level(int level_number, sf::Color colour)
     {
         // constructor
@@ -220,16 +223,18 @@ public:
             collectables[i] = new Collectable(leveldata->Levels[level_number][(9 + (2 * i))], leveldata->Levels[level_number][(10 + (2 * i))]);
         }
 
-        numEnemys = leveldata->Levels[level_number][(10 + (2 * numCollectables))];
+        numEnemys = leveldata->Levels[level_number][(9 + (2 * numCollectables))];
         for (int i = 0; i < numEnemys; i++)
         {
             break;
         }
-
-        numPortals = leveldata->Levels[level_number][(10 + (2 * numCollectables) + 1 + (4 * numEnemys))];
+        std::cout<<(numCollectables)<<"\n";
+        std::cout<<(numEnemys)<<"\n";
+        std::cout<<(10 + (2 * numCollectables) + (4 * numEnemys))<<"\n";
+        numPortals = leveldata->Levels[level_number][(10 + (2 * numCollectables) + (4 * numEnemys))];
         for (int i = 0; i < numPortals; i++)
         {
-            break;
+            portals[i] = new Portal(leveldata->Levels[level_number][((10 + (2 * numCollectables) + 1 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 2 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 3 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 4 + (4 * numEnemys)) + (4 * i))]);
         }
 
         control1.setFillColor(colour);
@@ -368,6 +373,10 @@ public:
         {
             level->collectables[i]->IsColliding(x, y, level->ballr);
         }
+        for (int i = 0; i < level->numPortals; i++)
+        {
+            level->portals[i]->IsColliding(x, y, level->ballr);
+        }
         if (detected_points[0] != 0)
         {
             if (detected_points[0] > 0)
@@ -464,6 +473,12 @@ int main()
             for (int i = 0; i < game->level->numCollectables; i++)
             {
                 win.draw(game->level->collectables[i]->ball);
+            }
+
+            for (int i = 0; i < game->level->numPortals; i++)
+            {
+                win.draw(game->level->portals[i]->portal1);
+                win.draw(game->level->portals[i]->portal2);
             }
             win.draw(game->lines);
             win.draw(game->ball);
