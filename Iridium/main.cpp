@@ -165,18 +165,19 @@ public:
         {
             collectables[i] = new Collectable(leveldata->Levels[level_number][(9 + (2 * i))], leveldata->Levels[level_number][(10 + (2 * i))]);
         }
-        /*
-        numEnemys = levelData[10];
+
+        numEnemys = leveldata->Levels[level_number][(10 + (2 * numCollectables))];
         for (int i = 0; i < numEnemys; i++)
         {
             break;
         }
-        numPortals = levelData[12];
+
+        numPortals = leveldata->Levels[level_number][(10 + (2 * numCollectables) + 1 + (4 * numEnemys))];
         for (int i = 0; i < numPortals; i++)
         {
             break;
         }
-        */
+
         control1.setFillColor(colour);
         control2.setFillColor(colour);
 
