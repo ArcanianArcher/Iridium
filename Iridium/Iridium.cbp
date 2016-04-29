@@ -28,6 +28,9 @@
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
+				<ResourceCompiler>
+					<Add directory="levels" />
+				</ResourceCompiler>
 				<Linker>
 					<Add option="-s" />
 					<Add library="sfml-graphics" />
@@ -49,7 +52,6 @@
 			<Add library="dxguid" />
 			<Add directory="C:/Program Files (x86)/CodeBlocks/sfml/lib" />
 		</Linker>
-		<Unit filename="cb.bmp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

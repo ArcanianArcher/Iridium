@@ -75,9 +75,55 @@ public:
     {
         Levels.resize(50);
         Levels[0] = {165, 165, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
-        Levels[1] = {075, 615, 15, 30, 30, 1000, 30, 30, 5, 300, 210, 300, 480, 525, 345, 750, 210, 750, 480, 0, 0, 0, 0};
+        Levels[1] = {075, 615, 15, 30, 30, 1000, 30, 30, 5, 305, 215, 305, 485, 530, 350, 755, 215, 755, 485, 0, 0, 0, 0};
         Levels[2] = {165, 255, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
-        Levels[3] = {075, 615, 15, 30, 30, 1000, 30, 30, 3, 210, 180, 525, 180, 840, 180, 0, 0, 0, 0};
+        Levels[3] = {075, 615, 15, 30, 30, 1000, 30, 30, 3, 215, 185, 530, 185, 845, 185, 0, 0, 0};
+        Levels[4] = {345, 435, 15, 25, 295, 1015, 295, 20, 6, 305, 148, 395, 148, 485, 148, 575, 148, 665, 148, 755, 148, 0, 0, 0};
+        Levels[5] = {};
+        Levels[6] = {};
+        Levels[7] = {};
+        Levels[8] = {};
+        Levels[9] = {};
+        Levels[10] = {};
+        Levels[11] = {};
+        Levels[12] = {};
+        Levels[13] = {};
+        Levels[14] = {};
+        Levels[15] = {};
+        Levels[16] = {};
+        Levels[17] = {};
+        Levels[18] = {};
+        Levels[19] = {};
+        Levels[20] = {};
+        Levels[21] = {};
+        Levels[22] = {};
+        Levels[23] = {};
+        Levels[24] = {};
+        Levels[25] = {};
+        Levels[26] = {};
+        Levels[27] = {};
+        Levels[28] = {};
+        Levels[29] = {};
+        Levels[30] = {};
+        Levels[31] = {};
+        Levels[32] = {};
+        Levels[33] = {};
+        Levels[34] = {};
+        Levels[35] = {};
+        Levels[36] = {};
+        Levels[37] = {};
+        Levels[38] = {};
+        Levels[39] = {};
+        Levels[40] = {};
+        Levels[41] = {};
+        Levels[42] = {};
+        Levels[43] = {};
+        Levels[44] = {};
+        Levels[45] = {};
+        Levels[46] = {};
+        Levels[47] = {};
+        Levels[48] = {};
+        Levels[49] = {};
     }
 };
 
@@ -136,15 +182,9 @@ public:
 
         std::cout << "new level: " << level_number << std::endl;
     };
-
-    int GetBallX(){return (level_image.getPixel(0, 0).r + level_image.getPixel(0, 0).g + level_image.getPixel(0, 0).b);}// + level_image.getPixel(1, 1).a);}
-    int GetBallY(){return (level_image.getPixel(1, 0).r + level_image.getPixel(1, 0).g + level_image.getPixel(1, 0).b);}
-    int GetBallR(){return (level_image.getPixel(2, 0).r);}
-    void SetControlOrb1Colour(sf::Color colour){control1.setFillColor(colour);}
-    void SetControlOrb2Colour(sf::Color colour){control2.setFillColor(colour);}
+    sf::Sprite GetSprite(){return level_sprite;}
     sf::Vector2f GetControlOrb1Position(void){return control1.getPosition();}
     sf::Vector2f GetControlOrb2Position(void){return control2.getPosition();}
-    sf::Sprite GetSprite(){return level_sprite;}
 
     bool CheckEnding(int x, int y, int r)
     {
@@ -287,8 +327,6 @@ public:
             }
             else // collided with obstacle
             {
-                x = level->GetBallX();
-                y = level->GetBallY();
                 x_speed = 0;
                 y_speed = 0;
             }
