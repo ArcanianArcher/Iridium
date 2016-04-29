@@ -85,11 +85,8 @@ public:
         portal2.setRadius(radius);
         portal2.setPosition(x2_pos, y2_pos);
     }
-    void teleport (float& xp, float& yp, bool portal) // portal 1 is true, portal 2 is false
+    void teleport (float& x, float& y, bool portal) // portal 1 is true, portal 2 is false
     {
-        float x = xp;
-        float y = yp;
-        std::cout<<"teleported \n";
         if (teleported == false)
         {
             teleported = true;
@@ -97,18 +94,15 @@ public:
             else {x = x1_pos; y = y1_pos;}
         }
     }
-    void IsColliding(float& xp, float& yp, int& rp)
+    void IsColliding(float& x, float& y, int& r)
     {
-        int x = xp;
-        int y = yp;
-        int r = rp;
-        if (sqrt(pow(abs((x + r) - (x1_pos + radius)), 2) + pow(abs((y + r) - (y1_pos + radius)), 2)) < (r))
+        if (sqrt(pow(abs((x + r) - (x1_pos + radius)), 2) + pow(abs((y + r) - (y1_pos + radius)), 2)) < (r + radius))
         {
-            teleport(xp, yp, false);
+            teleport(x, y, true);
         }
-        else if (sqrt(pow(abs((x + r) - (x2_pos + radius)), 2) + pow(abs((y + r) - (y2_pos + radius)), 2)) < (r))
+        else if (sqrt(pow(abs((x + r) - (x2_pos + radius)), 2) + pow(abs((y + r) - (y2_pos + radius)), 2)) < (r + radius))
         {
-            teleport(xp, yp, true);
+            teleport(x, y, false);
         }
         else {teleported = false;}
     }
