@@ -27,6 +27,52 @@ sf::Vector2f AddVectors(int *points, int total_detection_points, double total_sp
     return u;
 }
 
+class Song
+{
+public:
+    std::vector<sf::Music> musicArray
+    sf::Music song_1, song_2, song_3, song_4;
+    song_1.openFromFile("song_1.flac");
+    song_2.openFromFile("song_2.flac");
+    song_3.openFromFile("song_3.flac");
+    song_4.openFromFile("song_4.flac");
+
+    Song()
+    {
+        musicArray.resize(4);
+        musicArray[0] = song_1;
+        musicArray[1] = song_2;
+        musicArray[2] = song_3;
+        musicArray[3] = song_4;
+    }
+
+};
+
+class SoundFX
+{
+public:
+    std::vector<sf::Sound> soundArray;
+    sf::SoundBuffer buffer_1, buffer_2, buffer_3, buffer_4;
+    buffer_1.loadFromFile("sound_1.wav");
+    buffer_2.loadFromFile("sound_2.wav");
+    buffer_3.loadFromFile("sound_3.wav");
+    buffer_4.loadFromFile("sound_4.wav");
+    sf::Sound soundFX_1, soundFX_2, soundFX_3, soundFX_4;
+    soundFX_1.setBuffer(buffer_1);
+    soundFX_2.setBuffer(buffer_2);
+    soundFX_3.setBuffer(buffer_3);
+    soundFX_4.setBuffer(buffer_4);
+
+    SoundFX()
+    {
+        soundArray.resize(4);
+        soundArray[0] = soundFX_1;
+        soundArray[1] = soundFX_2;
+        soundArray[2] = soundFX_3;
+        soundArray[3] = soundFX_4;
+    }
+};
+
 class Collectable
 {
 public:
