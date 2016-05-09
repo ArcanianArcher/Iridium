@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -26,11 +27,11 @@ sf::Vector2f AddVectors(int *points, int total_detection_points, double total_sp
     sf::Vector2f u((vector_total.x / length) * total_speed, (vector_total.y / length) * total_speed);
     return u;
 }
-
+/*
 class Song
 {
 public:
-    std::vector<sf::Music> musicArray
+    std::vector<sf::Music> musicArray;
     sf::Music song_1, song_2, song_3, song_4;
     song_1.openFromFile("song_1.flac");
     song_2.openFromFile("song_2.flac");
@@ -72,7 +73,7 @@ public:
         soundArray[3] = soundFX_4;
     }
 };
-
+*/
 class Collectable
 {
 public:
@@ -131,8 +132,10 @@ public:
         portal2.setRadius(radius);
         portal2.setPosition(x2_pos, y2_pos);
     }
-    void teleport (float& x, float& y, bool portal) // portal 1 is true, portal 2 is false
+    void teleport (int *xp, int *yp, bool portal) // portal 1 is true, portal 2 is false
     {
+        int& x = *xp;
+        int& y = *yp;
         if (teleported == false)
         {
             teleported = true;
@@ -140,15 +143,17 @@ public:
             else {x = x1_pos; y = y1_pos;}
         }
     }
-    void IsColliding(float& x, float& y, int& r)
+    bool IsColliding(int *xp, int *yp, int r, int portalnum)
     {
-        if (sqrt(pow(abs((x + r) - (x1_pos + radius)), 2) + pow(abs((y + r) - (y1_pos + radius)), 2)) < (r + radius))
+        int x = *xp;
+        int y = *yp;
+        if (sqrt(pow(abs((x + r) - (x1_pos + radius)), 2) + pow(abs((y + r) - (y1_pos + radius)), 2)) < (r))
         {
-            teleport(x, y, true);
+            teleport(xp, yp, false);
         }
-        else if (sqrt(pow(abs((x + r) - (x2_pos + radius)), 2) + pow(abs((y + r) - (y2_pos + radius)), 2)) < (r + radius))
+        else if (sqrt(pow(abs((x + r) - (x2_pos + radius)), 2) + pow(abs((y + r) - (y2_pos + radius)), 2)) < (r))
         {
-            teleport(x, y, false);
+            teleport(xp, yp, true);
         }
         else {teleported = false;}
     }
@@ -175,7 +180,7 @@ public:
         Levels[2] = {165, 255, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
         Levels[3] = {075, 615, 15, 30, 30, 1000, 30, 30, 3, 215, 185, 530, 185, 845, 185, 0, 0, 0};
         Levels[4] = {345, 435, 15, 25, 295, 1015, 295, 20, 6, 305, 148, 395, 148, 485, 148, 575, 148, 665, 148, 755, 148, 0, 0, 0, 0};
-        Levels[5] = {125, 75, 15, 30, 30, 1000, 30, 30, 0, 0, 3, 125, 600, 380, 75, 380, 600, 650, 75, 650, 600, 920, 75};
+        Levels[5] = {};
         Levels[6] = {};
         Levels[7] = {};
         Levels[8] = {};
@@ -240,7 +245,6 @@ public:
     int numCollectables, numEnemys, numPortals;
     Collectable* collectables[50];
     //collectables.resize(50);
-    Portal* portals[50];
     Level(int level_number, sf::Color colour)
     {
         // constructor
@@ -263,18 +267,16 @@ public:
             collectables[i] = new Collectable(leveldata->Levels[level_number][(9 + (2 * i))], leveldata->Levels[level_number][(10 + (2 * i))]);
         }
 
-        numEnemys = leveldata->Levels[level_number][(9 + (2 * numCollectables))];
+        numEnemys = leveldata->Levels[level_number][(10 + (2 * numCollectables))];
         for (int i = 0; i < numEnemys; i++)
         {
             break;
         }
-        std::cout<<(numCollectables)<<"\n";
-        std::cout<<(numEnemys)<<"\n";
-        std::cout<<(10 + (2 * numCollectables) + (4 * numEnemys))<<"\n";
-        numPortals = leveldata->Levels[level_number][(10 + (2 * numCollectables) + (4 * numEnemys))];
+
+        numPortals = leveldata->Levels[level_number][(10 + (2 * numCollectables) + 1 + (4 * numEnemys))];
         for (int i = 0; i < numPortals; i++)
         {
-            portals[i] = new Portal(leveldata->Levels[level_number][((10 + (2 * numCollectables) + 1 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 2 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 3 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 4 + (4 * numEnemys)) + (4 * i))]);
+            break;
         }
 
         control1.setFillColor(colour);
@@ -413,10 +415,6 @@ public:
         {
             level->collectables[i]->IsColliding(x, y, level->ballr);
         }
-        for (int i = 0; i < level->numPortals; i++)
-        {
-            level->portals[i]->IsColliding(x, y, level->ballr);
-        }
         if (detected_points[0] != 0)
         {
             if (detected_points[0] > 0)
@@ -469,13 +467,63 @@ int main()
     sf::VertexArray lines(sf::Lines, 4);
     bool keyState[sf::Keyboard::KeyCount];
     for(int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
-    int game_state = 1; //main menu 0, game 1...
+    int game_state = 0; //main menu 0, game 1...
     Game* game = new Game(lines);
+
+    sf::RectangleShape Button;
+    sf::Vector2f sizee(100.f,100.f);
+    Button.setSize(sizee);
+    Button.setPosition(0,0);
 
     while (win.isOpen())
     {
         win.clear();
-        if (game_state == 1)
+        if (game_state == 0) // Main Menu
+        {
+            while(win.pollEvent(event))
+            {
+                switch(event.type)
+                {
+                    case sf::Event::Closed:
+                        win.close();
+                        break;
+                    case sf::Event::KeyPressed:
+                        if (event.key.code == sf::Keyboard::Escape) {win.close();}
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+            {
+                if (sf::Mouse::getPosition(win).x >= Button.getPosition().x && sf::Mouse::getPosition(win).x <= Button.getPosition().x + Button.getSize().x  && sf::Mouse::getPosition(win).y >= Button.getPosition().y && sf::Mouse::getPosition(win).y <= Button.getPosition().y + Button.getSize().y ) // Play Button (Level select)
+                {
+                    game_state = 2;
+                }
+                /*
+                else if (sf::Mouse::getPosition(win).x >=  && sf::Mouse::getPosition(win).x <=  && sf::Mouse::getPosition(win).y >=  && sf::Mouse::getPosition(win).y <=  ) // Options
+                {
+
+                }
+                else if (sf::Mouse::getPosition(win).x >=  && sf::Mouse::getPosition(win).x <=  && sf::Mouse::getPosition(win).y >=  && sf::Mouse::getPosition(win).y <=  ) // Credits
+                {
+
+                }
+                else if (sf::Mouse::getPosition(win).x >=  && sf::Mouse::getPosition(win).x <=  && sf::Mouse::getPosition(win).y >=  && sf::Mouse::getPosition(win).y <=  ) // Exit
+                {
+
+                }
+                */
+            }
+            //win.draw(//MAIN MENU)
+            win.draw(Button);
+        }
+        else if (game_state == 1) // Level Select
+        {
+
+        }
+        else if (game_state == 2) // Game
         {
             game->ResetLines();
             game->Movement();
@@ -490,7 +538,6 @@ int main()
                         if (event.key.code == sf::Keyboard::Escape) {win.close();}
                         if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code])
                             {game->SwitchPushPull();}
-                        //if (event.key.code == sf::Keyboard::R && !keyState[event.key.code]) {current_level_num++; level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);}
                         keyState[event.key.code] = true;
                         break;
                     case sf::Event::KeyReleased:
@@ -513,12 +560,6 @@ int main()
             for (int i = 0; i < game->level->numCollectables; i++)
             {
                 win.draw(game->level->collectables[i]->ball);
-            }
-
-            for (int i = 0; i < game->level->numPortals; i++)
-            {
-                win.draw(game->level->portals[i]->portal1);
-                win.draw(game->level->portals[i]->portal2);
             }
             win.draw(game->lines);
             win.draw(game->ball);
