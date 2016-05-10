@@ -132,10 +132,8 @@ public:
         portal2.setRadius(radius);
         portal2.setPosition(x2_pos, y2_pos);
     }
-    void teleport (int *xp, int *yp, bool portal) // portal 1 is true, portal 2 is false
+    void teleport (float& x, float& y, bool portal) // portal 1 is true, portal 2 is false
     {
-        int& x = *xp;
-        int& y = *yp;
         if (teleported == false)
         {
             teleported = true;
@@ -143,17 +141,15 @@ public:
             else {x = x1_pos; y = y1_pos;}
         }
     }
-    bool IsColliding(int *xp, int *yp, int r, int portalnum)
+    void IsColliding(float& x, float& y, int& r)
     {
-        int x = *xp;
-        int y = *yp;
-        if (sqrt(pow(abs((x + r) - (x1_pos + radius)), 2) + pow(abs((y + r) - (y1_pos + radius)), 2)) < (r))
+        if (sqrt(pow(abs((x + r) - (x1_pos + radius)), 2) + pow(abs((y + r) - (y1_pos + radius)), 2)) < (r + radius))
         {
-            teleport(xp, yp, false);
+            teleport(x, y, true);
         }
-        else if (sqrt(pow(abs((x + r) - (x2_pos + radius)), 2) + pow(abs((y + r) - (y2_pos + radius)), 2)) < (r))
+        else if (sqrt(pow(abs((x + r) - (x2_pos + radius)), 2) + pow(abs((y + r) - (y2_pos + radius)), 2)) < (r + radius))
         {
-            teleport(xp, yp, true);
+            teleport(x, y, false);
         }
         else {teleported = false;}
     }
@@ -215,7 +211,7 @@ public:
         Levels[37] = {};
         Levels[38] = {};
         Levels[39] = {};
-        Levels[40] = {};
+        Levels[40] = {125, 75, 15, 30, 30, 1000, 30, 30, 0, 0, 3, 125, 600, 380, 75, 380, 600, 650, 75, 650, 600, 920, 75};
         Levels[41] = {};
         Levels[42] = {};
         Levels[43] = {};
@@ -244,7 +240,7 @@ public:
     int ballr;
     int numCollectables, numEnemys, numPortals;
     Collectable* collectables[50];
-    //collectables.resize(50);
+    Portal* portals[50];
     Level(int level_number, sf::Color colour)
     {
         // constructor
@@ -267,16 +263,15 @@ public:
             collectables[i] = new Collectable(leveldata->Levels[level_number][(9 + (2 * i))], leveldata->Levels[level_number][(10 + (2 * i))]);
         }
 
-        numEnemys = leveldata->Levels[level_number][(10 + (2 * numCollectables))];
+        numEnemys = leveldata->Levels[level_number][(9 + (2 * numCollectables))];
         for (int i = 0; i < numEnemys; i++)
         {
             break;
         }
-
-        numPortals = leveldata->Levels[level_number][(10 + (2 * numCollectables) + 1 + (4 * numEnemys))];
+        numPortals = leveldata->Levels[level_number][(10 + (2 * numCollectables) + (4 * numEnemys))];
         for (int i = 0; i < numPortals; i++)
         {
-            break;
+            portals[i] = new Portal(leveldata->Levels[level_number][((10 + (2 * numCollectables) + 1 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 2 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 3 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 4 + (4 * numEnemys)) + (4 * i))]);
         }
 
         control1.setFillColor(colour);
@@ -415,6 +410,10 @@ public:
         {
             level->collectables[i]->IsColliding(x, y, level->ballr);
         }
+        for (int i = 0; i < level->numPortals; i++)
+        {
+            level->portals[i]->IsColliding(x, y, level->ballr);
+        }
         if (detected_points[0] != 0)
         {
             if (detected_points[0] > 0)
@@ -484,16 +483,15 @@ int main()
             {
                 switch(event.type)
                 {
-                    case sf::Event::Closed:
-                        win.close();
-                        break;
-                    case sf::Event::KeyPressed:
-                        if (event.key.code == sf::Keyboard::Escape) {win.close();}
-                        break;
-                    default:
-                        break;
+                case sf::Event::Closed:
+                    win.close();
+                    break;
+                case sf::Event::KeyPressed:
+                    if (event.key.code == sf::Keyboard::Escape) {win.close();}
+                    break;
+                default:
+                    break;
                 }
-
             }
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
@@ -538,6 +536,7 @@ int main()
                         if (event.key.code == sf::Keyboard::Escape) {win.close();}
                         if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code])
                             {game->SwitchPushPull();}
+                        //if (event.key.code == sf::Keyboard::R && !keyState[event.key.code]) {current_level_num++; level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);}
                         keyState[event.key.code] = true;
                         break;
                     case sf::Event::KeyReleased:
@@ -560,6 +559,12 @@ int main()
             for (int i = 0; i < game->level->numCollectables; i++)
             {
                 win.draw(game->level->collectables[i]->ball);
+            }
+
+            for (int i = 0; i < game->level->numPortals; i++)
+            {
+                win.draw(game->level->portals[i]->portal1);
+                win.draw(game->level->portals[i]->portal2);
             }
             win.draw(game->lines);
             win.draw(game->ball);
