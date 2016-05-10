@@ -183,7 +183,7 @@ public:
         Levels[10] = {};
         Levels[11] = {};
         Levels[12] = {90, 450, 15, 45, 45, 1035, 45, 30, 5, 315, 630, 405, 630, 495, 630, 585, 630, 675, 630, 0, 0, 0};
-        Levels[13] = {90, 665, 15, 45, 45, 1035, 45, 30, 7, 405, 225, 495, 255, 345, 410, 390, 450, 450, 465, 510, 450, 555, 405, 0, 0, 0};
+        Levels[13] = {90, 665, 15, 45, 45, 1035, 45, 30, 7, 405, 255, 495, 255, 345, 410, 390, 450, 450, 465, 510, 450, 555, 405, 0, 0, 0};
         Levels[14] = {};
         Levels[15] = {};
         Levels[16] = {};
@@ -243,7 +243,6 @@ public:
     Portal* portals[50];
     Level(int level_number, sf::Color colour)
     {
-        // constructor
         leveldata = new LevelData();
         std::string file_path = "./resources/M" + SSTR(level_number) + ".png";
         level_texture.loadFromFile(file_path);
@@ -347,8 +346,8 @@ public:
         lines = line;
         ball.setFillColor(sf::Color::Green);
         ball.setRadius(level->ballr);
-        x = level->bally;
-        y = level->ballx;
+        x = level->ballx;
+        y = level->bally;
     }
 
     void ResetLines()
@@ -428,8 +427,6 @@ public:
                 y_speed += (col_tangent.y) * i_friction_constant;
                 x = prev_x;
                 y = prev_y;
-                //x += x_speed;
-                //y += y_speed;
             }
             else // collided with obstacle
             {
@@ -455,6 +452,8 @@ public:
                 level = new Level(current_level_num, sf::Color::Red);
                 x = level->ballx;
                 y = level->bally;
+                x_speed = 0.f;
+                y_speed = 0.f;
                 ball.setRadius(level->ballr);
             }
         }
@@ -473,7 +472,7 @@ int main()
     sf::VertexArray lines(sf::Lines, 4);
     bool keyState[sf::Keyboard::KeyCount];
     for(int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
-    int game_state = 0; //main menu 0, game 1...
+    int game_state = 0; //main menu 0, game 2...
     Game* game = new Game(lines);
 
     sf::RectangleShape Button;
