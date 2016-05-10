@@ -249,7 +249,7 @@ public:
     {
         // constructor
         leveldata = new LevelData();
-        std::string file_path = "./levels/M" + SSTR(level_number + 1) + ".png";
+        std::string file_path = "./resources/M" + SSTR(level_number + 1) + ".png";
         level_texture.loadFromFile(file_path);
         level_image.loadFromFile(file_path);
         level_sprite.setTexture(level_texture, true);
