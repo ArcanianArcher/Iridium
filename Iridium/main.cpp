@@ -174,21 +174,20 @@ public:
 
     LevelData()
     {
-        Levels.resize(50);
-        Levels[0] = {165, 165, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
-        Levels[1] = {075, 615, 15, 30, 30, 1000, 30, 30, 5, 305, 215, 305, 485, 530, 350, 755, 215, 755, 485, 0, 0, 0, 0};
-        Levels[2] = {165, 255, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
-        Levels[3] = {075, 615, 15, 30, 30, 1000, 30, 30, 3, 215, 185, 530, 185, 845, 185, 0, 0, 0};
-        Levels[4] = {345, 435, 15, 25, 295, 1015, 295, 20, 6, 305, 148, 395, 148, 485, 148, 575, 148, 665, 148, 755, 148, 0, 0, 0, 0};
-        Levels[5] = {};
-        Levels[6] = {};
+        Levels.resize(51);
+        Levels[1] = {165, 165, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
+        Levels[2] = {075, 615, 15, 30, 30, 1000, 30, 30, 5, 305, 215, 305, 485, 530, 350, 755, 215, 755, 485, 0, 0, 0, 0};
+        Levels[3] = {165, 255, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
+        Levels[4] = {075, 615, 15, 30, 30, 1000, 30, 30, 3, 215, 185, 530, 185, 845, 185, 0, 0, 0};
+        Levels[5] = {345, 435, 15, 25, 295, 1015, 295, 20, 6, 305, 148, 395, 148, 485, 148, 575, 148, 665, 148, 755, 148, 0, 0, 0, 0};
+        Levels[6] = {90, 315, 15, 30, 30, 1000, 30, 30, 4, 360, 315, 720, 315, 360, 495, 720, 495, 0, 0, 0};
         Levels[7] = {};
         Levels[8] = {};
         Levels[9] = {};
         Levels[10] = {};
         Levels[11] = {};
-        Levels[12] = {};
-        Levels[13] = {};
+        Levels[12] = {90, 450, 15, 30, 30, 1000, 30, 5, 315, 630, 405, 630, 495, 630, 585, 630, 675, 630, 0, 0, 0};
+        Levels[13] = {90, 665, 15, 30, 30, 1000, 30, 7, 405, 225, 495, 255, 345, 410, 390, 450, 450, 465, 510, 450, 555, 405, 0, 0, 0};
         Levels[14] = {};
         Levels[15] = {};
         Levels[16] = {};
@@ -216,7 +215,7 @@ public:
         Levels[38] = {};
         Levels[39] = {};
         Levels[40] = {};
-        Levels[41] = {};
+        Levels[41] = {135, 90, 15, 30, 30, 1000, 30, 0, 0, 3, 135, 630, 405, 90, 405, 630, 675, 90, 675, 630, 945, 90, 0};
         Levels[42] = {};
         Levels[43] = {};
         Levels[44] = {};
@@ -225,6 +224,7 @@ public:
         Levels[47] = {};
         Levels[48] = {};
         Levels[49] = {};
+        Levels[50] = {};
     }
 };
 
@@ -237,19 +237,18 @@ public:
     sf::Sprite level_sprite;
     sf::CircleShape control1;
     sf::CircleShape control2;
-    int control_radius;// = 25;
+    int control_radius;
     LevelData* leveldata;
     int ballx;
     int bally;
     int ballr;
     int numCollectables, numEnemys, numPortals;
     Collectable* collectables[50];
-    //collectables.resize(50);
     Level(int level_number, sf::Color colour)
     {
         // constructor
         leveldata = new LevelData();
-        std::string file_path = "./resources/M" + SSTR(level_number + 1) + ".png";
+        std::string file_path = "./resources/M" + SSTR(level_number) + ".png";
         level_texture.loadFromFile(file_path);
         level_image.loadFromFile(file_path);
         level_sprite.setTexture(level_texture, true);
@@ -338,7 +337,7 @@ public:
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 0;
+        current_level_num = 1;
         level = new Level(current_level_num, sf::Color::Red);
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
