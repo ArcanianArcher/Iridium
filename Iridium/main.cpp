@@ -84,9 +84,9 @@ public:
     sf::CircleShape ball;
     Collectable(int x, int y)
     {
-        x_pos = x;
-        y_pos = y;
         radius = 10;
+        x_pos = x - radius;
+        y_pos = y - radius;
         collected = false;
         ball.setFillColor(sf::Color::Blue);
         ball.setRadius(radius);
@@ -119,11 +119,11 @@ public:
 
     Portal(int x1, int y1, int x2, int y2)
     {
-        x1_pos = x1;
-        y1_pos = y1;
-        x2_pos = x2;
-        y2_pos = y2;
         radius = 20;
+        x1_pos = x1 - radius;
+        y1_pos = y1 - radius;
+        x2_pos = x2 - radius;
+        y2_pos = y2 - radius;
         teleported = false;
         portal1.setFillColor(sf::Color(0,150,215));
         portal1.setRadius(radius);
@@ -171,19 +171,19 @@ public:
     LevelData()
     {
         Levels.resize(51);
-        Levels[1] = {165, 165, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
-        Levels[2] = {075, 615, 15, 30, 30, 1000, 30, 30, 5, 305, 215, 305, 485, 530, 350, 755, 215, 755, 485, 0, 0, 0, 0};
-        Levels[3] = {165, 255, 15, 30, 30, 1000, 30, 30, 0, 0, 0};
-        Levels[4] = {075, 615, 15, 30, 30, 1000, 30, 30, 3, 215, 185, 530, 185, 845, 185, 0, 0, 0};
-        Levels[5] = {345, 435, 15, 25, 295, 1015, 295, 20, 6, 305, 148, 395, 148, 485, 148, 575, 148, 665, 148, 755, 148, 0, 0, 0, 0};
-        Levels[6] = {90, 315, 15, 30, 30, 1000, 30, 30, 4, 360, 315, 720, 315, 360, 495, 720, 495, 0, 0, 0};
+        Levels[1] = {180, 180, 15, 45, 45, 1035, 45, 30, 0, 0, 0};
+        Levels[2] = {90, 630, 15, 45, 45, 1035, 45, 30, 5, 315, 225, 315, 495, 540, 360, 765, 225, 765, 495, 0, 0, 0, 0};
+        Levels[3] = {165, 255, 15, 45, 45, 1035, 45, 30, 0, 0, 0};
+        Levels[4] = {90, 630, 15, 45, 45, 1035, 45, 30, 3, 225, 195, 540, 195, 855, 195, 0, 0, 0};
+        Levels[5] = {345, 435, 15, 45, 315, 1015, 315, 30, 6, 315, 158, 405, 158, 495, 158, 585, 158, 675, 158, 765, 158, 0, 0, 0, 0};
+        Levels[6] = {90, 315, 15, 45, 45, 1035, 45, 30, 4, 360, 315, 720, 315, 360, 495, 720, 495, 0, 0, 0};
         Levels[7] = {};
         Levels[8] = {};
         Levels[9] = {};
         Levels[10] = {};
         Levels[11] = {};
-        Levels[12] = {90, 450, 15, 30, 30, 1000, 30, 5, 315, 630, 405, 630, 495, 630, 585, 630, 675, 630, 0, 0, 0};
-        Levels[13] = {90, 665, 15, 30, 30, 1000, 30, 7, 405, 225, 495, 255, 345, 410, 390, 450, 450, 465, 510, 450, 555, 405, 0, 0, 0};
+        Levels[12] = {90, 450, 15, 45, 45, 1035, 45, 5, 315, 630, 405, 630, 495, 630, 585, 630, 675, 630, 0, 0, 0};
+        Levels[13] = {90, 665, 15, 45, 45, 1035, 45, 7, 405, 225, 495, 255, 345, 410, 390, 450, 450, 465, 510, 450, 555, 405, 0, 0, 0};
         Levels[14] = {};
         Levels[15] = {};
         Levels[16] = {};
@@ -250,13 +250,13 @@ public:
         level_image.loadFromFile(file_path);
         level_sprite.setTexture(level_texture, true);
         control_radius = leveldata->Levels[level_number][7];
-        ballx = leveldata->Levels[level_number][0];
-        bally = leveldata->Levels[level_number][1];
         ballr = leveldata->Levels[level_number][2];
+        ballx = leveldata->Levels[level_number][0] - ballr;
+        bally = leveldata->Levels[level_number][1] - ballr;
         control1.setRadius(leveldata->Levels[level_number][7]);
         control2.setRadius(leveldata->Levels[level_number][7]);
-        control1.setPosition(leveldata->Levels[level_number][3], leveldata->Levels[level_number][4]);
-        control2.setPosition(leveldata->Levels[level_number][5], leveldata->Levels[level_number][6]);
+        control1.setPosition(leveldata->Levels[level_number][3] - control_radius, leveldata->Levels[level_number][4] - control_radius);
+        control2.setPosition(leveldata->Levels[level_number][5] - control_radius, leveldata->Levels[level_number][6] - control_radius);
         numCollectables = leveldata->Levels[level_number][8];
         for (int i = 0; i < numCollectables; i++)
         {
