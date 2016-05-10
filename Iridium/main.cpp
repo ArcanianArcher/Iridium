@@ -182,8 +182,8 @@ public:
         Levels[9] = {};
         Levels[10] = {};
         Levels[11] = {};
-        Levels[12] = {90, 450, 15, 45, 45, 1035, 45, 5, 315, 630, 405, 630, 495, 630, 585, 630, 675, 630, 0, 0, 0};
-        Levels[13] = {90, 665, 15, 45, 45, 1035, 45, 7, 405, 225, 495, 255, 345, 410, 390, 450, 450, 465, 510, 450, 555, 405, 0, 0, 0};
+        Levels[12] = {90, 450, 15, 45, 45, 1035, 45, 30, 5, 315, 630, 405, 630, 495, 630, 585, 630, 675, 630, 0, 0, 0};
+        Levels[13] = {90, 665, 15, 45, 45, 1035, 45, 30, 7, 405, 225, 495, 255, 345, 410, 390, 450, 450, 465, 510, 450, 555, 405, 0, 0, 0};
         Levels[14] = {};
         Levels[15] = {};
         Levels[16] = {};
@@ -211,7 +211,7 @@ public:
         Levels[38] = {};
         Levels[39] = {};
         Levels[40] = {};
-        Levels[41] = {135, 90, 15, 30, 30, 1000, 30, 0, 0, 3, 135, 630, 405, 90, 405, 630, 675, 90, 675, 630, 945, 90, 0};
+        Levels[41] = {135, 90, 15, 30, 30, 1000, 30, 30, 0, 0, 3, 135, 630, 405, 90, 405, 630, 675, 90, 675, 630, 945, 90, 0};
         Levels[42] = {};
         Levels[43] = {};
         Levels[44] = {};
@@ -309,6 +309,11 @@ public:
             {
                 num_points = -1;
                 points[0] = num_points;
+                for (int j = 0; j < numCollectables; j++)
+                {
+                    collectables[j]->collected = false;
+                    collectables[j]->ball.setFillColor(sf::Color::Blue);
+                }
                 return;
             }
         }
@@ -428,6 +433,8 @@ public:
             }
             else // collided with obstacle
             {
+                x = level->ballx;
+                y = level->bally;
                 x_speed = 0;
                 y_speed = 0;
             }
@@ -560,7 +567,6 @@ int main()
             {
                 win.draw(game->level->collectables[i]->ball);
             }
-
             for (int i = 0; i < game->level->numPortals; i++)
             {
                 win.draw(game->level->portals[i]->portal1);
