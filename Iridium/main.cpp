@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <algorithm>
 
 const double PI = 3.141592653589793238463;
 
@@ -74,6 +75,56 @@ public:
     }
 };
 */
+class Enemy
+{
+public:
+    int start_x, start_y, end_x, end_y, speed_x, speed_y, radius, x, y;
+    sf::CircleShape ball;
+    Enemy(int startx, int starty, int endx, int endy, int speedx, int speedy, int pradius)
+    {
+        start_x = startx;
+        start_y = starty;
+        x = startx;
+        y = starty;
+        end_x = endx;
+        end_y = endy;
+        speed_x = speedx;
+        speed_y = speedy;
+        radius = pradius;
+        ball.setRadius(radius);
+        ball.setFillColor(sf::Color(255,0,0));
+    }
+
+    void Move()
+    {
+        if (speed_x != 0)
+        {
+            if (speed_x > 0 && x > std::max(start_x, end_x))
+            {
+                speed_x *= -1;
+            }
+            else if (speed_x < 0 && x < std::min(start_x, start_y))
+            {
+                 speed_x *= -1;
+            }
+        }
+        if (speed_y != 0)
+        {
+            if (speed_y > 0 && y > std::max(start_y, end_y))
+            {
+                speed_y *= -1;
+            }
+            else if (speed_y < 0 && y < std::min(start_y, start_y))
+            {
+                 speed_y *= -1;
+            }
+        }
+        x += speed_x;
+        y += speed_y;
+        ball.setPosition(x, y);
+    }
+};
+
 class Collectable
 {
 public:
@@ -88,7 +139,7 @@ public:
         x_pos = x - radius;
         y_pos = y - radius;
         collected = false;
-        ball.setFillColor(sf::Color::Blue);
+        ball.setFillColor(sf::Color(35, 35, 35));
         ball.setRadius(radius);
         ball.setPosition(x_pos, y_pos);
     }
@@ -97,7 +148,7 @@ public:
     {
         if (sqrt(pow(abs((x + r) - (x_pos + radius)), 2) + pow(abs((y + r) - (y_pos + radius)), 2)) < (radius + r))
         {
-            ball.setFillColor(sf::Color::Yellow);
+            ball.setFillColor(sf::Color(25, 80, 0));
             collected = true;
             return true;
         }
@@ -162,7 +213,7 @@ public:
     Level
     ballx, bally, ballr, corb1x, corb1y, corb2x, corb2y, corbr
     #collectibles, coll1x, coll1y, ...
-    #enemys, enemy1x1, enemy1y1, enemy1x2, enemy1y2, ...
+    #enemys, startx, starty, endx, endy, speedx, speedy, radius ...
     #portals, portala1x, portala1y, portala1exitx, portala1exity, ...
     */
 
@@ -241,6 +292,7 @@ public:
     int numCollectables, numEnemys, numPortals;
     Collectable* collectables[50];
     Portal* portals[50];
+    Enemy* enemys[50];
     Level(int level_number, sf::Color colour)
     {
         leveldata = new LevelData();
@@ -265,12 +317,13 @@ public:
         numEnemys = leveldata->Levels[level_number][(9 + (2 * numCollectables))];
         for (int i = 0; i < numEnemys; i++)
         {
-            break;
+            enemys[i] = new Enemy((leveldata->Levels[level_number][(10 + (2 * numCollectables) + (7 * i))]), (leveldata->Levels[level_number][(11 + (2 * numCollectables) + (7 * i))]), (leveldata->Levels[level_number][(12 + (2 * numCollectables) + (7 * i))]), (leveldata->Levels[level_number][(13 + (2 * numCollectables) + (7 * i))]), (leveldata->Levels[level_number][(14 + (2 * numCollectables) + (7 * i))]), (leveldata->Levels[level_number][(15 + (2 * numCollectables) + (7 * i))]), (leveldata->Levels[level_number][(16 + (2 * numCollectables) + (7 * i))]));
         }
-        numPortals = leveldata->Levels[level_number][(10 + (2 * numCollectables) + (4 * numEnemys))];
+
+        numPortals = leveldata->Levels[level_number][(10 + (2 * numCollectables) + (7 * numEnemys))];
         for (int i = 0; i < numPortals; i++)
         {
-            portals[i] = new Portal(leveldata->Levels[level_number][((10 + (2 * numCollectables) + 1 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 2 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 3 + (4 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 4 + (4 * numEnemys)) + (4 * i))]);
+            portals[i] = new Portal(leveldata->Levels[level_number][((10 + (2 * numCollectables) + 1 + (7 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 2 + (7 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 3 + (7 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 4 + (7 * numEnemys)) + (4 * i))]);
         }
 
         control1.setFillColor(colour);
@@ -311,7 +364,7 @@ public:
                 for (int j = 0; j < numCollectables; j++)
                 {
                     collectables[j]->collected = false;
-                    collectables[j]->ball.setFillColor(sf::Color::Blue);
+                    collectables[j]->ball.setFillColor(sf::Color(35, 35, 35));
                 }
                 return;
             }
@@ -337,8 +390,8 @@ public:
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 1;
-        level = new Level(current_level_num, sf::Color::Red);
+        current_level_num = 12;
+        level = new Level(current_level_num, sf::Color::Green);
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
         i_friction_constant = 0.3f;
@@ -352,10 +405,10 @@ public:
 
     void ResetLines()
     {
-        lines[0].position = sf::Vector2f(0, 0); lines[0].color = sf::Color::Blue;
-        lines[1].position = sf::Vector2f(0, 0); lines[1].color = sf::Color::Blue;
-        lines[2].position = sf::Vector2f(0, 0); lines[2].color = sf::Color::Blue;
-        lines[3].position = sf::Vector2f(0, 0); lines[3].color = sf::Color::Blue;
+        lines[0].position = sf::Vector2f(0, 0); lines[0].color = sf::Color::Green;
+        lines[1].position = sf::Vector2f(0, 0); lines[1].color = sf::Color::Green;
+        lines[2].position = sf::Vector2f(0, 0); lines[2].color = sf::Color::Green;
+        lines[3].position = sf::Vector2f(0, 0); lines[3].color = sf::Color::Green;
     }
 
     void RightOrb()
@@ -418,6 +471,22 @@ public:
         {
             level->portals[i]->IsColliding(x, y, level->ballr);
         }
+        for (int i = 0; i < level->numEnemys; i++)
+        {
+            level->enemys[i]->Move();
+            if (sqrt(pow(abs((x + level->ballr) - (level->enemys[i]->x + level->enemys[i]->radius)), 2) + pow(abs((y + level->ballr) - (level->enemys[i]->y + level->enemys[i]->radius)), 2)) < (level->ballr + level->enemys[i]->radius))
+            {
+                x = level->ballx;
+                y = level->bally;
+                x_speed = 0;
+                y_speed = 0;
+                for(int j = 0; j < level->numCollectables; j++)
+                {
+                    level->collectables[j]->collected = false;
+                    level->collectables[j]->ball.setFillColor(sf::Color(35, 35, 35));
+                }
+            }
+        }
         if (detected_points[0] != 0)
         {
             if (detected_points[0] > 0)
@@ -449,7 +518,7 @@ public:
             if (all_collected)
             {
                 current_level_num++;
-                level = new Level(current_level_num, sf::Color::Red);
+                level = new Level(current_level_num, sf::Color::Green);
                 x = level->ballx;
                 y = level->bally;
                 x_speed = 0.f;
@@ -570,6 +639,10 @@ int main()
             {
                 win.draw(game->level->portals[i]->portal1);
                 win.draw(game->level->portals[i]->portal2);
+            }
+            for (int i = 0; i < game->level->numEnemys; i++)
+            {
+                win.draw(game->level->enemys[i]->ball);
             }
             win.draw(game->lines);
             win.draw(game->ball);
