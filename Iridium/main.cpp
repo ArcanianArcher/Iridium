@@ -139,7 +139,7 @@ public:
         x_pos = x - radius;
         y_pos = y - radius;
         collected = false;
-        ball.setFillColor(sf::Color(35, 35, 35));
+        ball.setFillColor(sf::Color(64, 64, 64));
         ball.setRadius(radius);
         ball.setPosition(x_pos, y_pos);
     }
@@ -148,7 +148,7 @@ public:
     {
         if (sqrt(pow(abs((x + r) - (x_pos + radius)), 2) + pow(abs((y + r) - (y_pos + radius)), 2)) < (radius + r))
         {
-            ball.setFillColor(sf::Color(25, 80, 0));
+            ball.setFillColor(sf::Color(0, 102, 0));
             collected = true;
             return true;
         }
@@ -176,10 +176,10 @@ public:
         x2_pos = x2 - radius;
         y2_pos = y2 - radius;
         teleported = false;
-        portal1.setFillColor(sf::Color(0,150,215));
+        portal1.setFillColor(sf::Color(0,128,255));
         portal1.setRadius(radius);
         portal1.setPosition(x1_pos, y1_pos);
-        portal2.setFillColor(sf::Color(255,125,0));
+        portal2.setFillColor(sf::Color(255,128,0));
         portal2.setRadius(radius);
         portal2.setPosition(x2_pos, y2_pos);
     }
@@ -293,7 +293,7 @@ public:
     Collectable* collectables[50];
     Portal* portals[50];
     Enemy* enemys[50];
-    Level(int level_number, sf::Color colour)
+    Level(int level_number)
     {
         leveldata = new LevelData();
         std::string file_path = "./resources/M" + SSTR(level_number) + ".png";
@@ -325,10 +325,6 @@ public:
         {
             portals[i] = new Portal(leveldata->Levels[level_number][((10 + (2 * numCollectables) + 1 + (7 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 2 + (7 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 3 + (7 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 4 + (7 * numEnemys)) + (4 * i))]);
         }
-
-        control1.setFillColor(colour);
-        control2.setFillColor(colour);
-
         std::cout << "new level: " << level_number << std::endl;
     };
     sf::Sprite GetSprite(){return level_sprite;}
@@ -364,7 +360,7 @@ public:
                 for (int j = 0; j < numCollectables; j++)
                 {
                     collectables[j]->collected = false;
-                    collectables[j]->ball.setFillColor(sf::Color(35, 35, 35));
+                    collectables[j]->ball.setFillColor(sf::Color(64, 64, 64));
                 }
                 return;
             }
@@ -391,13 +387,13 @@ public:
     Game(sf::VertexArray line)
     {
         current_level_num = 12;
-        level = new Level(current_level_num, sf::Color::Green);
+        level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
         i_friction_constant = 0.3f;
         pull_constant = 0.0005f;
         lines = line;
-        ball.setFillColor(sf::Color::Green);
+        ball.setFillColor(sf::Color(0,128,0));
         ball.setRadius(level->ballr);
         x = level->ballx;
         y = level->bally;
@@ -405,14 +401,17 @@ public:
 
     void ResetLines()
     {
-        lines[0].position = sf::Vector2f(0, 0); lines[0].color = sf::Color::Green;
-        lines[1].position = sf::Vector2f(0, 0); lines[1].color = sf::Color::Green;
-        lines[2].position = sf::Vector2f(0, 0); lines[2].color = sf::Color::Green;
-        lines[3].position = sf::Vector2f(0, 0); lines[3].color = sf::Color::Green;
+        level -> control1.setFillColor(sf::Color(128,128,128));
+        level -> control2.setFillColor(sf::Color(128,128,128));
+        lines[0].position = sf::Vector2f(0, 0); lines[0].color = sf::Color(0,128,0);
+        lines[1].position = sf::Vector2f(0, 0); lines[1].color = sf::Color(0,128,0);
+        lines[2].position = sf::Vector2f(0, 0); lines[2].color = sf::Color(0,128,0);
+        lines[3].position = sf::Vector2f(0, 0); lines[3].color = sf::Color(0,128,0);
     }
 
     void RightOrb()
     {
+        level -> control2.setFillColor(sf::Color(0,128,0));
         if ((x - level -> GetControlOrb2Position().x > 0) && (y - level -> GetControlOrb2Position().y <= 0)) {Quadrant_m1 = -1; Quadrant_m2 = 1;}       // Q1
             else if ((x - level -> GetControlOrb2Position().x <= 0) && (y - level -> GetControlOrb2Position().y < 0)) {Quadrant_m1 = 1; Quadrant_m2 = 1;}   // Q2
             else if ((x - level -> GetControlOrb2Position().x < 0) && (y - level -> GetControlOrb2Position().y >= 0)) {Quadrant_m1 = 1; Quadrant_m2 = -1;}  // Q3
@@ -432,6 +431,7 @@ public:
 
     void LeftOrb()
     {
+        level -> control1.setFillColor(sf::Color(0,128,0));
         if ((x - level -> GetControlOrb1Position().x > 0) && (y - level -> GetControlOrb1Position().y <= 0)) {Quadrant_m1 = -1; Quadrant_m2 = 1;}       // Q1
             else if ((x - level -> GetControlOrb1Position().x <= 0) && (y - level -> GetControlOrb1Position().y < 0)) {Quadrant_m1 = 1; Quadrant_m2 = 1;}   // Q2
             else if ((x - level -> GetControlOrb1Position().x < 0) && (y - level -> GetControlOrb1Position().y >= 0)) {Quadrant_m1 = 1; Quadrant_m2 = -1;}  // Q3
@@ -483,7 +483,7 @@ public:
                 for(int j = 0; j < level->numCollectables; j++)
                 {
                     level->collectables[j]->collected = false;
-                    level->collectables[j]->ball.setFillColor(sf::Color(35, 35, 35));
+                    level->collectables[j]->ball.setFillColor(sf::Color(64, 64, 64));
                 }
             }
         }
@@ -518,7 +518,7 @@ public:
             if (all_collected)
             {
                 current_level_num++;
-                level = new Level(current_level_num, sf::Color::Green);
+                level = new Level(current_level_num);
                 x = level->ballx;
                 y = level->bally;
                 x_speed = 0.f;
@@ -544,10 +544,32 @@ int main()
     int game_state = 0; //main menu 0, game 2...
     Game* game = new Game(lines);
 
-    sf::RectangleShape Button;
-    sf::Vector2f sizee(100.f,100.f);
-    Button.setSize(sizee);
-    Button.setPosition(0,0);
+    sf::Image MainMenu_image;
+    MainMenu_image.loadFromFile("./resources/MainMenu.png");
+    sf::Texture MainMenu_texture;
+    MainMenu_texture.loadFromFile("./resources/MainMenu.png");
+    sf::Sprite MainMenu_sprite;
+    MainMenu_sprite.setTexture(MainMenu_texture, true);
+
+    sf::Image LevelSelect_image;
+    sf::Texture LevelSelect_texture;
+    sf::Sprite LevelSelect_sprite;
+
+    std::vector <std::vector <int>> SelectionBoxData;
+    SelectionBoxData.resize(4);
+    SelectionBoxData[0] = {465, 267, 150, 75}; // Play
+    SelectionBoxData[1] = {420, 365, 240, 75}; // Options
+    SelectionBoxData[2] = {465, 465, 150, 75}; // Help
+    SelectionBoxData[3] = {465, 555, 150, 75}; // Exit
+
+    sf::RectangleShape SelectionBox;
+    int CurrentSelection = 0;
+    SelectionBox.setPosition(SelectionBoxData[CurrentSelection][0],SelectionBoxData[CurrentSelection][1]);
+    SelectionBox.setSize({SelectionBoxData[CurrentSelection][2],SelectionBoxData[CurrentSelection][3]});
+    SelectionBox.setFillColor(sf::Color::Transparent);
+    SelectionBox.setOutlineColor(sf::Color(0,128,0));
+    SelectionBox.setOutlineThickness(5.f);
+
 
     while (win.isOpen())
     {
@@ -563,14 +585,33 @@ int main()
                     break;
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Escape) {win.close();}
+                    if (event.key.code == sf::Keyboard::Up && !keyState[event.key.code])
+                    {
+                        if (CurrentSelection == 0) {CurrentSelection = 3;}
+                        else {CurrentSelection --;}
+                    }
+                    if (event.key.code == sf::Keyboard::Down && !keyState[event.key.code])
+                    {
+                        if (CurrentSelection == 3) {CurrentSelection = 0;}
+                        else {CurrentSelection ++;}
+                    }
+                    if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
+                    {
+                        if (CurrentSelection == 3) {win.close();}
+                        else {game_state = CurrentSelection + 2;}
+                    }
                     break;
                 default:
                     break;
                 }
             }
+
+            SelectionBox.setPosition(SelectionBoxData[CurrentSelection][0],SelectionBoxData[CurrentSelection][1]);
+            SelectionBox.setSize({SelectionBoxData[CurrentSelection][2],SelectionBoxData[CurrentSelection][3]});
+
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
-                if (sf::Mouse::getPosition(win).x >= Button.getPosition().x && sf::Mouse::getPosition(win).x <= Button.getPosition().x + Button.getSize().x  && sf::Mouse::getPosition(win).y >= Button.getPosition().y && sf::Mouse::getPosition(win).y <= Button.getPosition().y + Button.getSize().y ) // Play Button (Level select)
+                if (sf::Mouse::getPosition(win).x >= 465 && sf::Mouse::getPosition(win).x <= 465 + 150  && sf::Mouse::getPosition(win).y >= 267 && sf::Mouse::getPosition(win).y <= 267 + 75 ) // Play Button (Level select)
                 {
                     game_state = 2;
                 }
@@ -589,8 +630,8 @@ int main()
                 }
                 */
             }
-            //win.draw(//MAIN MENU)
-            win.draw(Button);
+            win.draw(MainMenu_sprite);
+            win.draw(SelectionBox);
         }
         else if (game_state == 1) // Level Select
         {
