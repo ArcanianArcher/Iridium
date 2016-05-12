@@ -611,24 +611,19 @@ int main()
 
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
-                if (sf::Mouse::getPosition(win).x >= 465 && sf::Mouse::getPosition(win).x <= 465 + 150  && sf::Mouse::getPosition(win).y >= 267 && sf::Mouse::getPosition(win).y <= 267 + 75 ) // Play Button (Level select)
+                if (sf::Mouse::getPosition(win).x >= SelectionBoxData[3][0] && sf::Mouse::getPosition(win).x <= SelectionBoxData[3][0] + SelectionBoxData[3][2]  && sf::Mouse::getPosition(win).y >= SelectionBoxData[3][1] && sf::Mouse::getPosition(win).y <= SelectionBoxData[3][1] + SelectionBoxData[3][3])
                 {
-                    game_state = 2;
+                    win.close();
                 }
-                /*
-                else if (sf::Mouse::getPosition(win).x >=  && sf::Mouse::getPosition(win).x <=  && sf::Mouse::getPosition(win).y >=  && sf::Mouse::getPosition(win).y <=  ) // Options
-                {
-
+                else {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if (sf::Mouse::getPosition(win).x >= SelectionBoxData[i][0] && sf::Mouse::getPosition(win).x <= SelectionBoxData[i][0] + SelectionBoxData[i][2]  && sf::Mouse::getPosition(win).y >= SelectionBoxData[i][1] && sf::Mouse::getPosition(win).y <= SelectionBoxData[i][1] + SelectionBoxData[i][3])
+                        {
+                            game_state = i + 2;
+                        }
+                    }
                 }
-                else if (sf::Mouse::getPosition(win).x >=  && sf::Mouse::getPosition(win).x <=  && sf::Mouse::getPosition(win).y >=  && sf::Mouse::getPosition(win).y <=  ) // Credits
-                {
-
-                }
-                else if (sf::Mouse::getPosition(win).x >=  && sf::Mouse::getPosition(win).x <=  && sf::Mouse::getPosition(win).y >=  && sf::Mouse::getPosition(win).y <=  ) // Exit
-                {
-
-                }
-                */
             }
             win.draw(MainMenu_sprite);
             win.draw(SelectionBox);
