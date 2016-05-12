@@ -82,15 +82,15 @@ public:
     sf::CircleShape ball;
     Enemy(int startx, int starty, int endx, int endy, int speedx, int speedy, int pradius)
     {
-        start_x = startx;
-        start_y = starty;
-        x = startx;
-        y = starty;
-        end_x = endx;
-        end_y = endy;
+        radius = pradius;
+        start_x = startx - radius;
+        start_y = starty - radius;
+        x = start_x;
+        y = start_y;
+        end_x = endx - radius;
+        end_y = endy - radius;
         speed_x = speedx;
         speed_y = speedy;
-        radius = pradius;
         ball.setRadius(radius);
         ball.setFillColor(sf::Color(255,0,0));
     }
@@ -242,7 +242,7 @@ public:
         Levels[18] = {};
         Levels[19] = {};
         Levels[20] = {};
-        Levels[21] = {};
+        Levels[21] = {90, 360, 15, 45, 45, 1035, 45, 30, 6, 338, 225, 338, 383, 338, 540, 743, 225, 743, 383, 743, 540, 1, 540, 225, 540, 540, 0, 3, 45, 0, 0, 0};
         Levels[22] = {};
         Levels[23] = {};
         Levels[24] = {};
@@ -386,7 +386,7 @@ public:
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 12;
+        current_level_num = 21;
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
