@@ -11,6 +11,10 @@
 #include <algorithm>
 
 const double PI = 3.141592653589793238463;
+//sf::SoundBuffer buffer_1;
+//sf::Sound soundFX_1;
+//buffer_1.loadFromFile("sound_1.wav");
+//soundFX_1.setBuffer(buffer_1);
 
 #define SSTR( x ) static_cast< std::ostringstream & >( \
         ( std::ostringstream() << std::dec << x ) ).str()
@@ -28,53 +32,7 @@ sf::Vector2f AddVectors(int *points, int total_detection_points, double total_sp
     sf::Vector2f u((vector_total.x / length) * total_speed, (vector_total.y / length) * total_speed);
     return u;
 }
-/*
-class Song
-{
-public:
-    std::vector<sf::Music> musicArray;
-    sf::Music song_1, song_2, song_3, song_4;
-    song_1.openFromFile("song_1.flac");
-    song_2.openFromFile("song_2.flac");
-    song_3.openFromFile("song_3.flac");
-    song_4.openFromFile("song_4.flac");
 
-    Song()
-    {
-        musicArray.resize(4);
-        musicArray[0] = song_1;
-        musicArray[1] = song_2;
-        musicArray[2] = song_3;
-        musicArray[3] = song_4;
-    }
-
-};
-
-class SoundFX
-{
-public:
-    std::vector<sf::Sound> soundArray;
-    sf::SoundBuffer buffer_1, buffer_2, buffer_3, buffer_4;
-    buffer_1.loadFromFile("sound_1.wav");
-    buffer_2.loadFromFile("sound_2.wav");
-    buffer_3.loadFromFile("sound_3.wav");
-    buffer_4.loadFromFile("sound_4.wav");
-    sf::Sound soundFX_1, soundFX_2, soundFX_3, soundFX_4;
-    soundFX_1.setBuffer(buffer_1);
-    soundFX_2.setBuffer(buffer_2);
-    soundFX_3.setBuffer(buffer_3);
-    soundFX_4.setBuffer(buffer_4);
-
-    SoundFX()
-    {
-        soundArray.resize(4);
-        soundArray[0] = soundFX_1;
-        soundArray[1] = soundFX_2;
-        soundArray[2] = soundFX_3;
-        soundArray[3] = soundFX_4;
-    }
-};
-*/
 class Enemy
 {
 public:
@@ -228,14 +186,14 @@ public:
         Levels[4] = {90, 630, 15, 45, 45, 1035, 45, 30, 3, 225, 195, 540, 195, 855, 195, 0, 0, 0};
         Levels[5] = {345, 435, 15, 45, 315, 1015, 315, 30, 6, 315, 158, 405, 158, 495, 158, 585, 158, 675, 158, 765, 158, 0, 0, 0, 0};
         Levels[6] = {90, 315, 15, 45, 45, 1035, 45, 30, 4, 360, 315, 720, 315, 360, 495, 720, 495, 0, 0, 0};
-        Levels[7] = {};
+        Levels[7] = {540, 293, 15, 45, 45, 1035, 45, 30, 6, 90, 135, 990, 135, 360, 383, 720, 383, 90, 630, 990, 630, 0, 0, 0};
         Levels[8] = {};
         Levels[9] = {};
         Levels[10] = {};
         Levels[11] = {};
         Levels[12] = {90, 450, 15, 45, 45, 1035, 45, 30, 5, 315, 630, 405, 630, 495, 630, 585, 630, 675, 630, 0, 0, 0};
         Levels[13] = {90, 665, 15, 45, 45, 1035, 45, 30, 7, 405, 255, 495, 255, 345, 410, 390, 450, 450, 465, 510, 450, 555, 405, 0, 0, 0};
-        Levels[14] = {540, 293, 15, 45, 45, 1035, 45, 30, 6, 90, 135, 990, 135, 360, 383, 720, 383, 90, 630, 990, 630, 0, 0, 0};
+        Levels[14] = {};
         Levels[15] = {};
         Levels[16] = {};
         Levels[17] = {};
@@ -262,7 +220,7 @@ public:
         Levels[38] = {};
         Levels[39] = {};
         Levels[40] = {};
-        Levels[41] = {135, 90, 15, 30, 30, 1000, 30, 30, 0, 0, 3, 135, 630, 405, 90, 405, 630, 675, 90, 675, 630, 945, 90, 0};
+        Levels[41] = {135, 90, 15, 45, 45, 1035, 45, 30, 0, 0, 3, 135, 630, 405, 90, 405, 630, 675, 90, 675, 630, 945, 90, 0};
         Levels[42] = {};
         Levels[43] = {};
         Levels[44] = {};
@@ -386,7 +344,7 @@ public:
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 14;
+        current_level_num = 1;
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
