@@ -386,7 +386,7 @@ public:
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 21;
+        current_level_num = 5;
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
@@ -517,13 +517,24 @@ public:
             }
             if (all_collected)
             {
-                current_level_num++;
-                level = new Level(current_level_num);
-                x = level->ballx;
-                y = level->bally;
-                x_speed = 0.f;
-                y_speed = 0.f;
-                ball.setRadius(level->ballr);
+                while (true)
+                {
+                    if (level -> leveldata -> Levels[current_level_num + 1].size() > 0)
+                    {
+                        current_level_num++;
+                        level = new Level(current_level_num);
+                        x = level->ballx;
+                        y = level->bally;
+                        x_speed = 0.f;
+                        y_speed = 0.f;
+                        ball.setRadius(level->ballr);
+                        break;
+                    }
+                    else {
+                        current_level_num++;
+                    }
+                }
+
             }
         }
         ball.setPosition(x, y);
