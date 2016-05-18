@@ -12,10 +12,15 @@
 
 #define SSTR(x) static_cast<std::ostringstream&>((std::ostringstream()<<std::dec<<x)).str()
 const double PI = 3.141592653589793238463;
-//sf::SoundBuffer buffer_1;
-//sf::Sound soundFX_1;
-//buffer_1.loadFromFile("sound_1.wav");
-//soundFX_1.setBuffer(buffer_1);
+sf::SoundBuffer B1;
+sf::Sound S1;
+sf::SoundBuffer B2;
+sf::Sound S2;
+sf::SoundBuffer B3;
+sf::Sound S3;
+sf::SoundBuffer B4;
+sf::Sound S4;
+
 
 sf::Vector2f AddVectors(int *points, int total_detection_points, double total_speed)
 {
@@ -106,6 +111,7 @@ public:
         {
             ball.setFillColor(sf::Color(0, 102, 0));
             collected = true;
+            S3.play();
             return true;
         }
         return false;
@@ -144,6 +150,7 @@ public:
         if (teleported == false)
         {
             teleported = true;
+            S4.play();
             if (portal){x = x2_pos; y = y2_pos;}
             else {x = x1_pos; y = y1_pos;}
         }
@@ -342,7 +349,7 @@ public:
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 1;
+        current_level_num = 41;
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
@@ -353,6 +360,14 @@ public:
         ball.setRadius(level->ballr);
         x = level->ballx;
         y = level->bally;
+        B1.loadFromFile("./resources/S1.ogg");
+        S1.setBuffer(B1);
+        B2.loadFromFile("./resources/S2.ogg");
+        S2.setBuffer(B2);
+        B3.loadFromFile("./resources/S3.ogg");
+        S3.setBuffer(B3);
+        B4.loadFromFile("./resources/S4.ogg");
+        S4.setBuffer(B4);
     }
 
     void ResetLines()
@@ -432,6 +447,7 @@ public:
                 y = level->bally;
                 x_speed = 0;
                 y_speed = 0;
+                S1.play();
                 for(int j = 0; j < level->numCollectables; j++)
                 {
                     level->collectables[j]->collected = false;
@@ -455,6 +471,12 @@ public:
                 y = level->bally;
                 x_speed = 0;
                 y_speed = 0;
+                S1.play();
+                for(int j = 0; j < level->numCollectables; j++)
+                {
+                    level->collectables[j]->collected = false;
+                    level->collectables[j]->ball.setFillColor(sf::Color(64, 64, 64));
+                }
             }
         }
         colour_point = level->level_image.getPixel(x, y);
@@ -477,6 +499,7 @@ public:
                     if (level -> leveldata -> Levels[current_level_num + 1].size() > 0)
                     {
                         current_level_num++;
+                        S2.play();
                         level = new Level(current_level_num);
                         x = level->ballx;
                         y = level->bally;
@@ -549,18 +572,20 @@ int main()
                     if (event.key.code == sf::Keyboard::Escape) {win.close();}
                     if (event.key.code == sf::Keyboard::Up && !keyState[event.key.code])
                     {
+                        S3.play();
                         if (CurrentSelection == 0) {CurrentSelection = 3;}
                         else {CurrentSelection --;}
                     }
                     if (event.key.code == sf::Keyboard::Down && !keyState[event.key.code])
                     {
+                        S3.play();
                         if (CurrentSelection == 3) {CurrentSelection = 0;}
                         else {CurrentSelection ++;}
                     }
                     if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
                     {
                         if (CurrentSelection == 3) {win.close();}
-                        else {game_state = CurrentSelection + 2;}
+                        else {game_state = CurrentSelection + 2; S2.play();}
                     }
                     break;
                 default:
@@ -605,8 +630,8 @@ int main()
                         break;
                     case sf::Event::KeyPressed:
                         if (event.key.code == sf::Keyboard::Escape) {win.close();}
-                        if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code])
-                            {game->SwitchPushPull();}
+                        //if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code])
+                            //{game->SwitchPushPull();}
                         if (event.key.code == sf::Keyboard::R && !keyState[event.key.code])
                         {
                             game->level = new Level(game->current_level_num);
