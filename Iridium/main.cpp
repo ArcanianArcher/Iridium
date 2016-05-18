@@ -10,14 +10,12 @@
 #include <string.h>
 #include <algorithm>
 
+#define SSTR(x) static_cast<std::ostringstream&>((std::ostringstream()<<std::dec<<x)).str()
 const double PI = 3.141592653589793238463;
 //sf::SoundBuffer buffer_1;
 //sf::Sound soundFX_1;
 //buffer_1.loadFromFile("sound_1.wav");
 //soundFX_1.setBuffer(buffer_1);
-
-#define SSTR( x ) static_cast< std::ostringstream & >( \
-        ( std::ostringstream() << std::dec << x ) ).str()
 
 sf::Vector2f AddVectors(int *points, int total_detection_points, double total_speed)
 {
@@ -174,7 +172,6 @@ public:
     #enemys, startx, starty, endx, endy, speedx, speedy, radius ...
     #portals, portala1x, portala1y, portala1exitx, portala1exity, ...
     */
-
     std::vector<std::vector<int>> Levels;
 
     LevelData()
@@ -339,12 +336,13 @@ public:
     bool pushpull = true;
     bool all_collected;
     sf::VertexArray lines;
+    sf::Color colour_point;
     sf::CircleShape ball;
     Level* level;
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 15;
+        current_level_num = 1;
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
@@ -407,10 +405,7 @@ public:
             lines[1].position = sf::Vector2f((x + ball.getRadius()), (y + ball.getRadius()));
     }
 
-    void SwitchPushPull()
-    {
-        pushpull = !pushpull;
-    }
+    void SwitchPushPull(){pushpull = !pushpull;}
 
     void Movement()
     {
@@ -419,7 +414,6 @@ public:
         prev_y = y;
         y += y_speed;
         x += x_speed;
-
         level->CollisionPoints(detected_points, x, y, ball.getRadius(), detection_points);
         for (int i = 0; i < level->numCollectables; i++)
         {
@@ -463,6 +457,9 @@ public:
                 y_speed = 0;
             }
         }
+        colour_point = level->level_image.getPixel(x, y);
+        if(colour_point == sf::Color(255,255,0)){pushpull = false;}
+        if(colour_point == sf::Color(0,128,0)){pushpull = true;}
         if (level->CheckEnding(x, y, level -> ballr))
         {
             all_collected = true;
@@ -492,14 +489,11 @@ public:
                         current_level_num++;
                     }
                 }
-
             }
         }
         ball.setPosition(x, y);
     }
 };
-
-
 
 int main()
 {
@@ -539,7 +533,6 @@ int main()
     SelectionBox.setOutlineColor(sf::Color(0,128,0));
     SelectionBox.setOutlineThickness(5.f);
 
-
     while (win.isOpen())
     {
         win.clear();
@@ -574,10 +567,8 @@ int main()
                     break;
                 }
             }
-
             SelectionBox.setPosition(SelectionBoxData[CurrentSelection][0],SelectionBoxData[CurrentSelection][1]);
             SelectionBox.setSize({SelectionBoxData[CurrentSelection][2],SelectionBoxData[CurrentSelection][3]});
-
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
                 if (sf::Mouse::getPosition(win).x >= SelectionBoxData[3][0] && sf::Mouse::getPosition(win).x <= SelectionBoxData[3][0] + SelectionBoxData[3][2]  && sf::Mouse::getPosition(win).y >= SelectionBoxData[3][1] && sf::Mouse::getPosition(win).y <= SelectionBoxData[3][1] + SelectionBoxData[3][3])
@@ -599,7 +590,7 @@ int main()
         }
         else if (game_state == 1) // Level Select
         {
-
+            game_state = 0;
         }
         else if (game_state == 2) // Game
         {
@@ -616,6 +607,14 @@ int main()
                         if (event.key.code == sf::Keyboard::Escape) {win.close();}
                         if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code])
                             {game->SwitchPushPull();}
+                        if (event.key.code == sf::Keyboard::R && !keyState[event.key.code])
+                        {
+                            game->level = new Level(game->current_level_num);
+                            game->x = game->level->ballx;
+                            game->y = game->level->bally;
+                            game->x_speed = game->y_speed = 0;
+                            game->pushpull = true;
+                        }
                         //if (event.key.code == sf::Keyboard::R && !keyState[event.key.code]) {current_level_num++; level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);}
                         keyState[event.key.code] = true;
                         break;
@@ -626,29 +625,16 @@ int main()
                         break;
                 }
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            {
-                game->LeftOrb();
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            {
-                game->RightOrb();
-            }
-
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){game->LeftOrb();}
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){game->RightOrb();}
             win.draw(game->level->GetSprite());
-            for (int i = 0; i < game->level->numCollectables; i++)
-            {
-                win.draw(game->level->collectables[i]->ball);
-            }
+            for (int i = 0; i < game->level->numCollectables; i++){win.draw(game->level->collectables[i]->ball);}
             for (int i = 0; i < game->level->numPortals; i++)
             {
                 win.draw(game->level->portals[i]->portal1);
                 win.draw(game->level->portals[i]->portal2);
             }
-            for (int i = 0; i < game->level->numEnemys; i++)
-            {
-                win.draw(game->level->enemys[i]->ball);
-            }
+            for (int i = 0; i < game->level->numEnemys; i++){win.draw(game->level->enemys[i]->ball);}
             win.draw(game->lines);
             win.draw(game->ball);
             win.draw(game->level -> control1);
