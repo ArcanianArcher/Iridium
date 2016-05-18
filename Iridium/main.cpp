@@ -57,22 +57,22 @@ public:
     {
         if (speed_x != 0)
         {
-            if (speed_x > 0 && x > std::max(start_x, end_x))
+            if (speed_x > 0 && x >= std::max(start_x, end_x))
             {
                 speed_x *= -1;
             }
-            else if (speed_x < 0 && x < std::min(start_x, start_y))
+            else if (speed_x < 0 && x <= std::min(start_x, end_x))
             {
                  speed_x *= -1;
             }
         }
         if (speed_y != 0)
         {
-            if (speed_y > 0 && y > std::max(start_y, end_y))
+            if (speed_y > 0 && y >= std::max(start_y, end_y))
             {
                 speed_y *= -1;
             }
-            else if (speed_y < 0 && y < std::min(start_y, start_y))
+            else if (speed_y < 0 && y <= std::min(start_y, end_y))
             {
                  speed_y *= -1;
             }
@@ -194,20 +194,20 @@ public:
         Levels[12] = {90, 450, 15, 45, 45, 1035, 45, 30, 5, 315, 630, 405, 630, 495, 630, 585, 630, 675, 630, 0, 0, 0};
         Levels[13] = {90, 665, 15, 45, 45, 1035, 45, 30, 7, 405, 255, 495, 255, 345, 410, 390, 450, 450, 465, 510, 450, 555, 405, 0, 0, 0};
         Levels[14] = {};
-        Levels[15] = {};
+        Levels[15] = {945, 158, 15, 45, 45, 1035, 45, 30, 4, 765, 158, 315, 158, 315, 563, 765, 563, 0, 0};
         Levels[16] = {};
         Levels[17] = {};
-        Levels[18] = {};
+        Levels[18] = {540, 405, 15, 45, 45, 1035, 45, 30, 2, 315, 360, 765, 360, 0, 0};
         Levels[19] = {};
         Levels[20] = {};
         Levels[21] = {90, 360, 15, 45, 45, 1035, 45, 30, 6, 338, 225, 338, 383, 338, 540, 743, 225, 743, 383, 743, 540, 1, 540, 225, 540, 540, 0, 3, 45, 0, 0, 0};
-        Levels[22] = {};
+        Levels[22] = {60, 600, 15, 45, 45, 1035, 45, 30, 0, 3, 225, 45, 225, 675, 0, 5, 30, 480, 675, 480, 45, 0, 5, 30, 735, 45, 735, 675, 0, 5, 30, 0, 0};
         Levels[23] = {};
         Levels[24] = {};
         Levels[25] = {};
         Levels[26] = {};
         Levels[27] = {};
-        Levels[28] = {};
+        Levels[28] = {120, 645, 15, 45, 45, 1035, 45, 30, 0, 3, 45, 525, 915, 525, 2, 0, 30, 915, 405, 45, 405, 2, 0, 30, 45, 285, 915, 285, 2, 0, 30, 0, 0};
         Levels[29] = {};
         Levels[30] = {};
         Levels[31] = {};
@@ -283,7 +283,7 @@ public:
         {
             portals[i] = new Portal(leveldata->Levels[level_number][((10 + (2 * numCollectables) + 1 + (7 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 2 + (7 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 3 + (7 * numEnemys)) + (4 * i))], leveldata->Levels[level_number][((10 + (2 * numCollectables) + 4 + (7 * numEnemys)) + (4 * i))]);
         }
-        std::cout << "new level: " << level_number << std::endl;
+        std::cout << "Level: " << level_number << std::endl;
     };
     sf::Sprite GetSprite(){return level_sprite;}
     sf::Vector2f GetControlOrb1Position(void){return control1.getPosition();}
@@ -344,7 +344,7 @@ public:
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 1;
+        current_level_num = 15;
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
