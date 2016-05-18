@@ -339,12 +339,13 @@ public:
     bool pushpull = true;
     bool all_collected;
     sf::VertexArray lines;
+    sf::Color colour_point;
     sf::CircleShape ball;
     Level* level;
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 1;
+        current_level_num = 5;
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.1f;
@@ -462,6 +463,15 @@ public:
                 x_speed = 0;
                 y_speed = 0;
             }
+        }
+        colour_point = level->level_image.getPixel(x, y);
+        if(colour_point == sf::Color(255,255,0))
+        {
+            pushpull = false;
+        }
+        if(colour_point == sf::Color(0,128,0))
+        {
+            pushpull = true;
         }
         if (level->CheckEnding(x, y, level -> ballr))
         {
@@ -616,6 +626,13 @@ int main()
                         if (event.key.code == sf::Keyboard::Escape) {win.close();}
                         if (event.key.code == sf::Keyboard::Space && !keyState[event.key.code])
                             {game->SwitchPushPull();}
+                        if (event.key.code == sf::Keyboard::R && !keyState[event.key.code])
+                        {
+                            game->level = new Level(game->current_level_num);
+                            game->x = game->level->ballx;
+                            game->y = game->level->bally;
+                            game->x_speed = game->y_speed = 0;
+                        }
                         //if (event.key.code == sf::Keyboard::R && !keyState[event.key.code]) {current_level_num++; level = new Level(current_level_num, 30, 30, 1000, 30, sf::Color::Red);}
                         keyState[event.key.code] = true;
                         break;
