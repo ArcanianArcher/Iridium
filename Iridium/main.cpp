@@ -353,6 +353,7 @@ public:
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.07f;
+        i_friction_constant = 0.35f;
         pull_constant = 0.00038f;
         lines = line;
         ball.setFillColor(sf::Color(0,128,0));
