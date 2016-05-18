@@ -349,12 +349,11 @@ public:
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 41;
+        current_level_num = 15;
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
-        gravity = 0.1f;
-        i_friction_constant = 0.3f;
-        pull_constant = 0.0005f;
+        gravity = 0.07f;
+        pull_constant = 0.00038f;
         lines = line;
         ball.setFillColor(sf::Color(0,128,0));
         ball.setRadius(level->ballr);
