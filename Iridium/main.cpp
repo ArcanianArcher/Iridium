@@ -110,8 +110,11 @@ public:
         if (sqrt(pow(abs((x + r) - (x_pos + radius)), 2) + pow(abs((y + r) - (y_pos + radius)), 2)) < (radius + r))
         {
             ball.setFillColor(sf::Color(0, 102, 0));
+            if(collected == false)
+            {
+                S3.play();
+            }
             collected = true;
-            S3.play();
             return true;
         }
         return false;
@@ -319,11 +322,6 @@ public:
             {
                 num_points = -1;
                 points[0] = num_points;
-                for (int j = 0; j < numCollectables; j++)
-                {
-                    collectables[j]->collected = false;
-                    collectables[j]->ball.setFillColor(sf::Color(64, 64, 64));
-                }
                 return;
             }
         }
@@ -349,7 +347,7 @@ public:
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 15;
+        current_level_num = 1;
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.07f;
