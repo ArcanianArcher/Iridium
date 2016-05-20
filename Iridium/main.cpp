@@ -11,6 +11,7 @@
 #include <algorithm>
 
 #define SSTR(x) static_cast<std::ostringstream&>((std::ostringstream()<<std::dec<<x)).str()
+sf::RenderWindow win(sf::VideoMode(1080, 720), "Iridium");
 const double PI = 3.141592653589793238463;
 sf::SoundBuffer B1;
 sf::Sound S1;
@@ -327,6 +328,22 @@ public:
         }
         points[0] = num_points;
     }
+    void EndCollisionPoints(int *points, int x, int y, int r, int p)
+    {
+        int num_points = 0;
+        sf::Color PointColour;
+        for (int i = 0; i < p; i++)
+        {
+            PointColour = (level_image.getPixel(abs((x + r) + (r * cos(((2 * i) * PI) / p))), abs((y + r) + (r * sin(((2 * i) * PI) / p)))));
+            if (PointColour == sf::Color::Black || PointColour == sf::Color::Red)
+            {
+                num_points++;
+                points[num_points] = i;
+            }
+
+        }
+        points[0] = num_points;
+    }
 };
 
 class Game
@@ -343,11 +360,15 @@ public:
     sf::VertexArray lines;
     sf::Color colour_point;
     sf::CircleShape ball;
+    sf::RectangleShape fade;
+    int fade_alpha;
+    bool increment_direction;
+    int counter;
     Level* level;
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 1;
+        current_level_num = 3;
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.07f;
@@ -366,6 +387,9 @@ public:
         S3.setBuffer(B3);
         B4.loadFromFile("./resources/S4.ogg");
         S4.setBuffer(B4);
+        fade.setPosition(0,0);
+        fade.setSize({win.getSize().x,win.getSize().y});
+        fade.setFillColor(sf::Color(255,255,255,0));
     }
 
     void ResetLines()
@@ -436,23 +460,6 @@ public:
         {
             level->portals[i]->IsColliding(x, y, level->ballr);
         }
-        for (int i = 0; i < level->numEnemys; i++)
-        {
-            level->enemys[i]->Move();
-            if (sqrt(pow(abs((x + level->ballr) - (level->enemys[i]->x + level->enemys[i]->radius)), 2) + pow(abs((y + level->ballr) - (level->enemys[i]->y + level->enemys[i]->radius)), 2)) < (level->ballr + level->enemys[i]->radius))
-            {
-                x = level->ballx;
-                y = level->bally;
-                x_speed = 0;
-                y_speed = 0;
-                S1.play();
-                for(int j = 0; j < level->numCollectables; j++)
-                {
-                    level->collectables[j]->collected = false;
-                    level->collectables[j]->ball.setFillColor(sf::Color(64, 64, 64));
-                }
-            }
-        }
         if (detected_points[0] != 0)
         {
             if (detected_points[0] > 0)
@@ -492,23 +499,94 @@ public:
             }
             if (all_collected)
             {
+                S2.play();
+                fade_alpha = 0;
+                increment_direction = true;
+                counter = 0;
                 while (true)
                 {
-                    if (level -> leveldata -> Levels[current_level_num + 1].size() > 0)
+                    if (increment_direction == true){fade_alpha += 5;}
+                    else {fade_alpha -= 5;}
+                    if (fade_alpha == 0){break;}
+                    if (fade_alpha == 255)
                     {
-                        current_level_num++;
-                        S2.play();
-                        level = new Level(current_level_num);
-                        x = level->ballx;
-                        y = level->bally;
-                        x_speed = 0.f;
-                        y_speed = 0.f;
-                        ball.setRadius(level->ballr);
-                        break;
+                        increment_direction = false;
+                        while (counter < 60)
+                        {
+                            counter++;
+                            win.draw(fade);
+                            win.display();
+                        }
+                        while (true)
+                        {
+                            if (level -> leveldata -> Levels[current_level_num + 1].size() > 0)
+                            {
+                                current_level_num++;
+                                level = new Level(current_level_num);
+                                x = level->ballx;
+                                y = level->bally;
+                                level -> control1.setFillColor(sf::Color(128,128,128));
+                                level -> control2.setFillColor(sf::Color(128,128,128));
+                                x_speed = 0.f;
+                                y_speed = 0.f;
+                                ball.setRadius(level->ballr);
+                                break;
+                            }
+                            else {
+                                current_level_num++;
+                            }
+                        }
                     }
-                    else {
-                        current_level_num++;
+                    if (pushpull){y_speed += gravity;}else{y_speed -= gravity;}
+                    prev_x = x;
+                    prev_y = y;
+                    y += y_speed;
+                    x += x_speed;
+                    level->EndCollisionPoints(detected_points, x, y, ball.getRadius(), detection_points);
+                    if (detected_points[0] != 0)
+                    {
+                        if (detected_points[0] > 0)
+                        {
+                            sf::Vector2f col_tangent = AddVectors(detected_points, detection_points, (sqrt((x_speed * x_speed) + (y_speed * y_speed))));
+                            x_speed += (col_tangent.x) * i_friction_constant;
+                            y_speed += (col_tangent.y) * i_friction_constant;
+                            x = prev_x;
+                            y = prev_y;
+                        }
                     }
+                    for (int i = 0; i < level->numEnemys; i++){level->enemys[i]->Move();}
+                    ball.setPosition(x, y);
+                    fade.setFillColor(sf::Color(0,0,0,fade_alpha));
+                    win.draw(level -> GetSprite());
+                    for (int i = 0; i < level -> numCollectables; i++){win.draw(level -> collectables[i] -> ball);}
+                    for (int i = 0; i < level -> numPortals; i++)
+                    {
+                        win.draw(level -> portals[i] -> portal1);
+                        win.draw(level -> portals[i] -> portal2);
+                    }
+                    for (int i = 0; i < level -> numEnemys; i++){win.draw(level -> enemys[i] -> ball);}
+                    win.draw(level -> control1);
+                    win.draw(level -> control2);
+                    win.draw(ball);
+                    win.draw(fade);
+                    win.display();
+                }
+            }
+        }
+        for (int i = 0; i < level->numEnemys; i++)
+        {
+            level->enemys[i]->Move();
+            if (sqrt(pow(abs((x + level->ballr) - (level->enemys[i]->x + level->enemys[i]->radius)), 2) + pow(abs((y + level->ballr) - (level->enemys[i]->y + level->enemys[i]->radius)), 2)) < (level->ballr + level->enemys[i]->radius))
+            {
+                x = level->ballx;
+                y = level->bally;
+                x_speed = 0;
+                y_speed = 0;
+                S1.play();
+                for(int j = 0; j < level->numCollectables; j++)
+                {
+                    level->collectables[j]->collected = false;
+                    level->collectables[j]->ball.setFillColor(sf::Color(64, 64, 64));
                 }
             }
         }
@@ -518,7 +596,6 @@ public:
 
 int main()
 {
-    sf::RenderWindow win(sf::VideoMode(1080, 720), "Iridium");
     win.setFramerateLimit(80);
     win.setKeyRepeatEnabled(false);
     sf::Event event;
