@@ -12,6 +12,7 @@
 
 #define SSTR(x) static_cast<std::ostringstream&>((std::ostringstream()<<std::dec<<x)).str()
 sf::RenderWindow win(sf::VideoMode(1080, 720), "Iridium");
+int game_state = 0; //main menu 0, level select 1, game 2...
 const double PI = 3.141592653589793238463;
 sf::SoundBuffer B1;
 sf::Sound S1;
@@ -368,7 +369,7 @@ public:
 
     Game(sf::VertexArray line)
     {
-        current_level_num = 3;
+        current_level_num = 1;
         level = new Level(current_level_num);
         x_speed = y_speed = 0.f;
         gravity = 0.07f;
@@ -508,6 +509,11 @@ public:
                     if (increment_direction == true){fade_alpha += 5;}
                     else {fade_alpha -= 5;}
                     if (fade_alpha == 0){break;}
+                    if (current_level_num == 50)
+                    {
+                        game_state = 1;
+                        break;
+                    }
                     if (fade_alpha == 255)
                     {
                         increment_direction = false;
@@ -602,7 +608,6 @@ int main()
     sf::VertexArray lines(sf::Lines, 4);
     bool keyState[sf::Keyboard::KeyCount];
     for(int i = 0; i < (sf::Keyboard::KeyCount); i++){keyState[i] = false;}
-    int game_state = 0; //main menu 0, game 2...
     Game* game = new Game(lines);
 
     sf::Image MainMenu_image;
