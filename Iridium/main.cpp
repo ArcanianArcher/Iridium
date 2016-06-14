@@ -511,13 +511,14 @@ public:
                     if (fade_alpha == 0){break;}
                     if (current_level_num == 50)
                     {
-                        game_state = 1;
+                        game_state = 0;
+                        current_level_num = 1;
                         break;
                     }
                     if (fade_alpha == 255)
                     {
                         increment_direction = false;
-                        while (counter < 60)
+                        while (counter < 20)
                         {
                             counter++;
                             win.draw(fade);
@@ -540,6 +541,12 @@ public:
                             }
                             else {
                                 current_level_num++;
+                                if (current_level_num > 50)
+                                {
+                                    game_state = 0;
+                                    current_level_num = 0;
+                                    return;
+                                }
                             }
                         }
                     }
@@ -665,7 +672,9 @@ int main()
                     if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
                     {
                         if (CurrentSelection == 3) {win.close();}
-                        else {game_state = CurrentSelection + 2; S2.play();}
+                        else {game_state = 2; S2.play();}
+
+                        //else {game_state = CurrentSelection + 2; S2.play();}
                     }
                     break;
                 default:
@@ -730,8 +739,8 @@ int main()
                         break;
                 }
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){game->LeftOrb();}
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){game->RightOrb();}
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Mouse::isButtonPressed(sf::Mouse::Right)){game->LeftOrb();}
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Mouse::isButtonPressed(sf::Mouse::Left)){game->RightOrb();}
             win.draw(game->level->GetSprite());
             for (int i = 0; i < game->level->numCollectables; i++){win.draw(game->level->collectables[i]->ball);}
             for (int i = 0; i < game->level->numPortals; i++)
